@@ -191,8 +191,8 @@ Gui, Add, DropDownList, x+8 vSwitchSpellKey, %temp%
 iniRead, spellNameRegion, ER_A11y.ini, Spells, spell_name_region
 Gui, Add, Text, xm+10 y+8 h18 0x200, 名称显示区域　　　
 Gui, Add, Edit, r1 vSpellNameRegion x+8 w135, %spellNameRegion%
-Gui, Add, Text,, 游戏中包含当前法术名称的像素区域(左、上、右、下)`n1920*1080 分辨率设置为 140;770;300;800`n2560*1440 分辨率设置为 190;1020;400;1060`n其他分辨率需要使用PS、截图等工具自行测量
-Gui, Add, Text, cRed y+0, 如果设置不正确，切换功能将完全无法正常工作
+Gui, Add, Text, cRed, 如果设置不正确，程序将总是通过长按切换键来切换
+Gui, Add, Text, y+0, 游戏中包含当前法术名称的像素区域(左、上、右、下)`n1920*1080 分辨率设置为 140;770;300;800`n2560*1440 分辨率设置为 190;1020;400;1060`n其他分辨率需要使用PS、截图等工具自行测量
 
 
 ; 消耗品设置
@@ -241,8 +241,8 @@ Gui, Add, DropDownList, x+8 vSwitchItemKey, %temp%
 iniRead, itemNameRegion, ER_A11y.ini, Items, item_name_region
 Gui, Add, Text, xm+10 y+8 h18 0x200, 名称显示区域　　　
 Gui, Add, Edit, r1 vItemNameRegion x+8 w135, %itemNameRegion%
-Gui, Add, Text,, 游戏中包含当前消耗品名称的像素区域(左、上、右、下)`n1920*1080 分辨率设置为 140;1025;300;1055`n2560*1440 分辨率设置为 190;1360;400;1400`n其他分辨率需要使用PS、截图等工具自行测量
-Gui, Add, Text, cRed y+0, 如果设置不正确，切换功能将完全无法正常工作
+Gui, Add, Text, cRed, 如果设置不正确，程序将总是通过长按切换键来切换
+Gui, Add, Text, y+0, 游戏中包含当前消耗品名称的像素区域(左、上、右、下)`n1920*1080 分辨率设置为 140;1025;300;1055`n2560*1440 分辨率设置为 190;1360;400;1400`n其他分辨率需要使用PS、截图等工具自行测量
 
 
 ; 武器设置
