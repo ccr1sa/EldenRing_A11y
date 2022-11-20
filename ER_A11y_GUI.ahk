@@ -33,6 +33,20 @@ addTitle(title, yOffset) {
     Gui, font
 }
 
+findTextRegion(type) {
+    SysGet, ScreenDimen, Monitor
+    width := ScreenDimenRight - ScreenDimenLeft
+    height := ScreenDimenBottom - ScreenDimenTop
+    if (type = 0) { ; 查找法术名称显示区域的预设值
+        key = Spell_%width%_%height%
+        iniRead, spellNameRegion, ER_A11y.ini, Resolution, %key%, 0;0;0;0
+        return spellNameRegion
+    } else if (type = 1) { ; 查找消耗品名称显示区域的预设值
+        key = Item_%width%_%height%
+        iniRead, itemNameRegion, ER_A11y.ini, Resolution, %key%, 0;0;0;0
+        return itemNameRegion
+    }
+}
 
 ; 初始化可选按键的配置
 combine_keys_map := ComObjCreate("Scripting.Dictionary")
@@ -197,10 +211,15 @@ Gui, Add, Text, xm+10 y+8 h18 0x200, 游戏的切换法术键　
 Gui, Add, DropDownList, x+8 vSwitchSpellKey, %temp%
 
 iniRead, spellNameRegion, ER_A11y.ini, Spells, spell_name_region
+if (!spellNameRegion) { ; 未设置分辨率，尝试从配置文件中寻找预设值
+    spellNameRegion := findTextRegion(0)
+}
 Gui, Add, Text, xm+10 y+8 h18 0x200, 名称显示区域　　　
 Gui, Add, Edit, r1 vSpellNameRegion x+8 w135, %spellNameRegion%
-Gui, Add, Text, cRed, 如果设置不正确，程序将总是通过长按切换键来切换
-Gui, Add, Text, y+0, 游戏中包含当前法术名称的像素区域(左、上、右、下)`n1920*1080 分辨率设置为 140;770;300;800`n2560*1440 分辨率设置为 190;1020;400;1060`n其他分辨率需要使用PS、截图等工具自行测量
+Gui, Add, Text, cRed, 如果设置不正确，程序将总是通过长按切换键来切换。
+Gui, Add, Text, y+0, 如果你遇到上述问题，请使用PS、截图等工具测量该值。
+Gui, Add, Text, y+0, 要了解测量方法，请查看
+Gui, Add, Text, x+0 cBlue gMeasureTipsClicked, 文字区域测量.jpg
 
 
 ; 消耗品设置
@@ -247,10 +266,15 @@ Gui, Add, Text, xm+10 y+8 h18 0x200, 游戏的切换消耗品键
 Gui, Add, DropDownList, x+8 vSwitchItemKey, %temp%
 
 iniRead, itemNameRegion, ER_A11y.ini, Items, item_name_region
+if (!itemNameRegion) { ; 未设置分辨率，尝试从配置文件中寻找预设值
+    itemNameRegion := findTextRegion(1)
+}
 Gui, Add, Text, xm+10 y+8 h18 0x200, 名称显示区域　　　
 Gui, Add, Edit, r1 vItemNameRegion x+8 w135, %itemNameRegion%
-Gui, Add, Text, cRed, 如果设置不正确，程序将总是通过长按切换键来切换
-Gui, Add, Text, y+0, 游戏中包含当前消耗品名称的像素区域(左、上、右、下)`n1920*1080 分辨率设置为 140;1025;300;1055`n2560*1440 分辨率设置为 190;1360;400;1400`n其他分辨率需要使用PS、截图等工具自行测量
+Gui, Add, Text, cRed, 如果设置不正确，程序将总是通过长按切换键来切换。
+Gui, Add, Text, y+0, 如果你遇到上述问题，请使用PS、截图等工具测量该值。
+Gui, Add, Text, y+0, 要了解测量方法，请查看
+Gui, Add, Text, x+0 cBlue gMeasureTipsClicked, 文字区域测量.jpg
 
 
 ; 武器设置
@@ -271,6 +295,10 @@ Gui, Add, Text, y+0 cBlue gPaddleGithubClicked, 　 https://github.com/telppa/Pa
 Gui Show, w480 h360, EldenRing Accessibility
 return
 
+
+MeasureTipsClicked:
+    Run 文字区域测量.jpg
+    return
 
 MyGithubClicked:
 	Run https://github.com/ccr1sa/EldenRing_A11y
