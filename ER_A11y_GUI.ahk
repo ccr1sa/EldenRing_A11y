@@ -60,6 +60,8 @@ combine_keys_map.Add("右 Alt", "RAlt")
 combine_keys_list_box_value := genListBoxParamFromDict(1, combine_keys_map)
 
 single_keys_map := ComObjCreate("Scripting.Dictionary")
+single_keys_map.Add("Esc", "Esc")
+single_keys_map.Add("Tab", "Tab")
 single_keys_map.Add("1", "1")
 single_keys_map.Add("2", "2")
 single_keys_map.Add("3", "3")
@@ -161,6 +163,17 @@ Gui, Add, Text, xm+16 y+8, 　　游戏的翻滚操作是在按下并松开翻�
 Gui, Add, Text, xm+16 y+16 w420 0x10  ;Horizontal Line > Black
 
 addTitle("通用", 0)
+iniRead, menuKeyInGame, ER_A11y.ini, Common, menu_button
+selection := findKeyFromDict(single_keys_map, menuKeyInGame)
+temp := setListBoxParamSelection(single_keys_list_box_value, selection)
+Gui, Add, Text, xm+16 y+8 h18 0x200, 游戏的菜单键
+Gui, Add, DropDownList, x+8 vMenuKeyInGame, %temp%
+iniRead, confirmKeyInGame, ER_A11y.ini, Common, confirm_button
+selection := findKeyFromDict(single_keys_map, confirmKeyInGame)
+temp := setListBoxParamSelection(single_keys_list_box_value, selection)
+Gui, Add, Text, xm+16 y+8 h18 0x200, 游戏的确认键
+Gui, Add, DropDownList, x+8 vConfirmKeyInGame, %temp%
+
 iniRead, clickInterval, ER_A11y.ini, Common, click_interval
 Gui, Add, Text, xm+16 y+8 h18 0x200, 切换法术和消耗品的间隔时间
 Gui, Add, Edit, r1 vClickInterval x+8 w135 Number, %clickInterval%
@@ -323,6 +336,12 @@ OnBtnApplyClicked:
 		ClickInterval = 200
 	}
 	IniWrite, %ClickInterval%, ER_A11y.ini, Common, click_interval
+
+	; 记录菜单键和确认键
+	GuiControlGet, MenuKeyInGame
+	GuiControlGet, ConfirmKeyInGame
+	IniWrite, % single_keys_map.Item(MenuKeyInGame), ER_A11y.ini, Common, menu_button
+	IniWrite, % single_keys_map.Item(ConfirmKeyInGame), ER_A11y.ini, Common, confirm_button
 
 	; 记录已记忆的法术
 	GuiControlGet, EquippedSpell1
