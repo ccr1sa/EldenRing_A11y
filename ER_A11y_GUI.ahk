@@ -344,18 +344,9 @@ OnBtnApplyClicked:
 	IniWrite, % single_keys_map.Item(ConfirmKeyInGame), ER_A11y.ini, Common, confirm_button
 
 	; 记录已记忆的法术
-	GuiControlGet, EquippedSpell1
-	GuiControlGet, EquippedSpell2
-	GuiControlGet, EquippedSpell3
-	GuiControlGet, EquippedSpell4
-	GuiControlGet, EquippedSpell5
-	GuiControlGet, EquippedSpell6
-	GuiControlGet, EquippedSpell7
-	GuiControlGet, EquippedSpell8
-	GuiControlGet, EquippedSpell9
-	GuiControlGet, EquippedSpell10
 	EquippedSpellsString := ""
 	Loop 10 {
+	    GuiControlGet, EquippedSpell%A_Index%
 		value := EquippedSpell%A_Index%
 		if (!value) {
 			continue
@@ -369,18 +360,9 @@ OnBtnApplyClicked:
 	IniWrite, %EquippedSpellsString%, ER_A11y.ini, Spells, equipped_spells
 
 	; 记录切换法术按键
-	GuiControlGet, SwitchSpellKeyDetached1
-	GuiControlGet, SwitchSpellKeyDetached2
-	GuiControlGet, SwitchSpellKeyDetached3
-	GuiControlGet, SwitchSpellKeyDetached4
-	GuiControlGet, SwitchSpellKeyDetached5
-	GuiControlGet, SwitchSpellKeyDetached6
-	GuiControlGet, SwitchSpellKeyDetached7
-	GuiControlGet, SwitchSpellKeyDetached8
-	GuiControlGet, SwitchSpellKeyDetached9
-	GuiControlGet, SwitchSpellKeyDetached10
 	SwitchSpellKeysString := ""
 	Loop 10 {
+	    GuiControlGet, SwitchSpellKeyDetached%A_Index%
 		value := SwitchSpellKeyDetached%A_Index%
 		if (A_Index != 1) {
 			SwitchSpellKeysString .= ";"
@@ -396,18 +378,9 @@ OnBtnApplyClicked:
 	IniWrite, %SpellNameRegion%, ER_A11y.ini, Spells, spell_name_region
 
 	; 记录已装备的消耗品
-	GuiControlGet, EquippedItem1
-	GuiControlGet, EquippedItem2
-	GuiControlGet, EquippedItem3
-	GuiControlGet, EquippedItem4
-	GuiControlGet, EquippedItem5
-	GuiControlGet, EquippedItem6
-	GuiControlGet, EquippedItem7
-	GuiControlGet, EquippedItem8
-	GuiControlGet, EquippedItem9
-	GuiControlGet, EquippedItem10
 	EquippedItemsString := ""
 	Loop 10 {
+	    GuiControlGet, EquippedItem%A_Index%
 		value := EquippedItem%A_Index%
 		if (!value) {
 			continue
@@ -421,18 +394,9 @@ OnBtnApplyClicked:
 	IniWrite, %EquippedItemsString%, ER_A11y.ini, Items, equipped_items
 
 	; 记录切换消耗品按键
-	GuiControlGet, SwitchItemKeyDetached1
-	GuiControlGet, SwitchItemKeyDetached2
-	GuiControlGet, SwitchItemKeyDetached3
-	GuiControlGet, SwitchItemKeyDetached4
-	GuiControlGet, SwitchItemKeyDetached5
-	GuiControlGet, SwitchItemKeyDetached6
-	GuiControlGet, SwitchItemKeyDetached7
-	GuiControlGet, SwitchItemKeyDetached8
-	GuiControlGet, SwitchItemKeyDetached9
-	GuiControlGet, SwitchItemKeyDetached10
 	SwitchItemKeysString := ""
 	Loop 10 {
+	    GuiControlGet, SwitchItemKeyDetached%A_Index%
 		value := SwitchItemKeyDetached%A_Index%
 		if (A_Index != 1) {
 			SwitchItemKeysString .= ";"
