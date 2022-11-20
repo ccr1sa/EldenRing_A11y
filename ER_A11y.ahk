@@ -1,4 +1,5 @@
 ﻿#SingleInstance Force
+#NoTrayIcon
 
 ; 读取翻滚配置
 iniRead, keyInGame, ER_A11y.ini, Dodging, key_in_game
