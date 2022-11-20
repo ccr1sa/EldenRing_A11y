@@ -73,12 +73,22 @@ longPress(button) {
 }
 
 ; 单击或连击一个按键
-singlePress(button, count:=1) {
-	Loop %count% {
-		Send {%button% Down}
+singlePress(button, count:=1, interval:=-1) {
+    if (interval < 0) {
+        interval := click_interval
+    }
+    if (count = 1) {
+		Send {%button% Down}e
 		Sleep 10
     	Send {%Button% Up}
-		Sleep % click_interval
+		Sleep % interval
+    } else {
+        Loop %count% {
+            Send {%button% Down}
+            Sleep 10
+            Send {%Button% Up}
+            Sleep % interval
+        }
 	}
 }
 
