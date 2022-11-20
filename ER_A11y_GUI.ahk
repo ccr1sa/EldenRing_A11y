@@ -27,6 +27,12 @@ findKeyFromDict(dict, value) {
 	}
 }
 
+addTitle(title, yOffset) {
+    Gui, font, s10 bold
+    Gui, Add, Text, xm+10 y+%yOffset% h18 0x200, % title
+    Gui, font
+}
+
 
 ; 初始化可选按键的配置
 combine_keys_map := ComObjCreate("Scripting.Dictionary")
@@ -127,28 +133,30 @@ Gui, Tab, 1
 iniRead, dodgingKeyInGame, ER_A11y.ini, Dodging, key_in_game
 selection := findKeyFromDict(all_keys_map, dodgingKeyInGame)
 temp := setListBoxParamSelection(all_keys_list_box_value, selection)
-Gui, Add, Text, xm+10 y+10 h18 0x200, 游戏的翻滚键
+addTitle("分离奔跑和翻滚按键", 10)
+Gui, Add, Text, xm+16 y+8 h18 0x200, 游戏的翻滚键
 Gui, Add, DropDownList, x+8 vDodgingKeyInGame, %temp%
 
 iniRead, dodgingKeyDetached, ER_A11y.ini, Dodging, key_detached
 selection := findKeyFromDict(all_keys_map, dodgingKeyDetached)
 temp := setListBoxParamSelection(all_keys_list_box_value, selection)
-Gui, Add, Text, x+16 h18 0x200, 新的翻滚键
+Gui, Add, Text, x+8 h18 0x200, 新的翻滚键
 Gui, Add, DropDownList, x+8 vDodgingKeyDetached, %temp%
-Gui, Add, Text, xm+10 y+8, 　　游戏的翻滚操作是在按下并松开翻滚键后触发的，如果松开较慢，则会出`n现翻滚延迟。这里可以设置一个新的翻滚键，当按下它时，会立刻发送按下翻`n滚键和松开翻滚键2个操作，实现在按下时触发翻滚。
+Gui, Add, Text, xm+16 y+8, 　　游戏的翻滚操作是在按下并松开翻滚键后触发的，如果松开较慢，则会出`n现翻滚延迟。这里可以设置一个新的翻滚键，当按下它时，会立刻发送按下翻`n滚键和松开翻滚键2个操作，实现在按下时触发翻滚。
 
-Gui, Add, Text, xm+16 y+20 w420 0x10  ;Horizontal Line > Black
+Gui, Add, Text, xm+16 y+16 w420 0x10  ;Horizontal Line > Black
 
+addTitle("通用", 0)
 iniRead, clickInterval, ER_A11y.ini, Common, click_interval
-Gui, Add, Text, xm+10 y+4 h18 0x200, 切换法术和消耗品的间隔时间
+Gui, Add, Text, xm+16 y+8 h18 0x200, 切换法术和消耗品的间隔时间
 Gui, Add, Edit, r1 vClickInterval x+8 w135 Number, %clickInterval%
-Gui, Add, Text, xm+10 y+8, 　　切换法术和消耗品时，两次切换操作的间隔时间(毫秒)。数值越低，切换`n速度越快，但可能因为游戏掉帧而导致一些切换操作被忽略，出现切换错误的`n情况。至少设置为 30 以上。
+Gui, Add, Text, xm+16 y+8, 　　切换法术和消耗品时，两次切换操作的间隔时间(毫秒)。数值越低，切换`n速度越快，但可能因为游戏掉帧而导致一些切换操作被忽略，出现切换错误的`n情况。至少设置为 30 以上。
 
 
 ; 法术设置
 Gui, Tab, 2
 
-Gui, Add, Text, xm+10 y+10 h18 0x200, 已记忆的法术
+Gui, Add, Text, xm+10 y+8 h18 0x200, 为每一个法术设置单独的选择按键
 iniRead, equippedSpells, ER_A11y.ini, Spells, equipped_spells
 equippedSpellArray := StrSplit(equippedSpells, ";")
 Gui, Add, Edit, r1 vEquippedSpell1 xm+10 y+8 w80, % equippedSpellArray[1] 
@@ -162,7 +170,7 @@ Gui, Add, Edit, r1 vEquippedSpell8 x+8 w80, % equippedSpellArray[8]
 Gui, Add, Edit, r1 vEquippedSpell9 x+8 w80, % equippedSpellArray[9] 
 Gui, Add, Edit, r1 vEquippedSpell10 x+8 w80, % equippedSpellArray[10] 
 
-Gui, Add, Text, xm+10 y+10 h18 0x200, 新的切换法术键
+Gui, Add, Text, xm+10 y+10 h18 0x200, ↑填写你记忆的法术　　　　　　　　　　　　　　　　　设置各个法术的按键↓
 iniRead, switchSpellKeysDetached, ER_A11y.ini, Spells, key_detached
 switchSpellKeyArray := StrSplit(switchSpellKeysDetached, ";")
 tempArr := []
@@ -198,7 +206,7 @@ Gui, Add, Text, y+0, 游戏中包含当前法术名称的像素区域(左、上�
 ; 消耗品设置
 Gui, Tab, 3
 
-Gui, Add, Text, xm+10 y+10 h18 0x200, 已装备的消耗品
+Gui, Add, Text, xm+10 y+8 h18 0x200, 为每一个消耗品设置单独的选择按键
 iniRead, equippedItems, ER_A11y.ini, Items, equipped_items
 equippedItemArray := StrSplit(equippedItems, ";")
 Gui, Add, Edit, r1 vEquippedItem1 xm+10 y+8 w80, % equippedItemArray[1] 
@@ -212,7 +220,7 @@ Gui, Add, Edit, r1 vEquippedItem8 x+8 w80, % equippedItemArray[8]
 Gui, Add, Edit, r1 vEquippedItem9 x+8 w80, % equippedItemArray[9] 
 Gui, Add, Edit, r1 vEquippedItem10 x+8 w80, % equippedItemArray[10] 
 
-Gui, Add, Text, xm+10 y+10 h18 0x200, 新的切换消耗品键
+Gui, Add, Text, xm+10 y+10 h18 0x200, ↑填写你携带的消耗品　　　　　　　　　　　　　　　设置各个消耗品的按键↓
 iniRead, switchItemKeysDetached, ER_A11y.ini, Items, key_detached
 switchItemKeyArray := StrSplit(switchItemKeysDetached, ";")
 tempArr := []
@@ -254,7 +262,7 @@ Gui, Tab, 4
 Gui, Add, Text, xm+10 y+8 h18 0x200, 注意：　
 Gui, Add, Text, y+8, 1. 程序使用屏幕文字识别和发送按键操作实现，与游戏进程无任何关联。`n`n2. 当法术或消耗品的名称与背景的颜色区别不大时 (例如，在化圣雪原里)，`n   文字识别可能失败，造成切换变慢或者错误。`n`n3. 未识别到文字时，将长按切换键回到第一项，然后再切换到指定项(较慢)。`n`n4. 文字识别使用 CPU 计算，在低性能 CPU 上可能识别较慢。`n   测试使用的是 i7-11800H，可瞬间响应。`n`n5. 切换法术和消耗品功能很可能不兼容英文游戏界面 (未测试)
 
-Gui, Add, Text, xm+10 y+24 h18 0x200, 其他：　
+Gui, Add, Text, xm+10 y+16 h18 0x200, 其他：　
 Gui, Add, Text, y+8, 1. 这是一个开源项目
 Gui, Add, Text, y+0 cBlue gMyGithubClicked, 　 https://github.com/ccr1sa/EldenRing_A11y
 Gui, Add, Text, y+10, 2. 体积高达 380M 的原因是使用了光学字符识别库 PaddleOCR
