@@ -530,7 +530,7 @@ OnBtnApplyClicked:
 	    GuiControlGet, EqpKey%A_Index%
 		GuiControlGet, EqpType%A_Index%
 		GuiControlGet, EqpPos%A_Index%
-		eqpKey := EqpKey%A_Index%
+		eqpKey := single_keys_map.Item(EqpKey%A_Index%)
 		eqpType := equipment_types.Item(EqpType%A_Index%)
 		eqpPos := equipment_positions.Item(EqpPos%A_Index%)
 		value := eqpKey . ";" . eqpType . ";" . eqpPos
