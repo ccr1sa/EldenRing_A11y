@@ -1,6 +1,8 @@
 ﻿#SingleInstance Force
 #NoTrayIcon
 
+global gNumKeyMaps := 10
+
 ; 读取翻滚配置
 iniRead, keyInGame, ER_A11y.ini, Dodging, key_in_game
 global dodging_key_in_game := keyInGame
@@ -98,6 +100,24 @@ if (menu_button) and (confirm_button) { ; 只有设置了游戏中的返回键�
         }
     }
 }
+
+; 读取按键映射配置
+global gKmGameKeys := []
+Loop %gNumKeyMaps% {
+    iniRead, config, ER_A11y.ini, KeyMap, config%A_Index%
+    configArray := StrSplit(config, ";")
+    gKmGameKeys.Push(configArray[1])
+    kmNewKey := configArray[2]
+
+    if (kmNewKey) {
+        labelName = keyMap%A_Index%
+        hotkey, ~%kmNewKey%, %labelName%
+        if (dodging_key_in_game) {
+            hotkey, ~%dodging_key_in_game% & ~%kmNewKey%, %labelName%
+        }
+    }
+}
+
 
 ; 当匹配到多个可能的结果时，借助该变量可选取距离最近的结果
 global spellCurrentIndex := 0
@@ -465,6 +485,56 @@ switchEquippmentKey8:
 
 switchEquippmentKey9:
     switchEquippment(9)
+    return
+
+sendMappedKey(index) {
+	if (checkEldenRingWindow() = 0) {
+		return
+	}
+    kmGameKey := gKmGameKeys[index]
+    if (kmGameKey) {
+        singlePress(kmGameKey, 1)
+    }
+}
+
+keyMap1:
+    sendMappedKey(1)
+    return
+
+keyMap2:
+    sendMappedKey(2)
+    return
+
+keyMap3:
+    sendMappedKey(3)
+    return
+
+keyMap4:
+    sendMappedKey(4)
+    return
+
+keyMap5:
+    sendMappedKey(5)
+    return
+
+keyMap6:
+    sendMappedKey(6)
+    return
+
+keyMap7:
+    sendMappedKey(7)
+    return
+
+keyMap8:
+    sendMappedKey(8)
+    return
+
+keyMap9:
+    sendMappedKey(9)
+    return
+
+keyMap10:
+    sendMappedKey(10)
     return
 
 

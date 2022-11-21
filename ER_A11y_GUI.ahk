@@ -1,6 +1,8 @@
 #SingleInstance Force
 #NoTrayIcon
 
+global gNumKeyMaps := 10
+
 genListBoxParamFromDict(useK1orV0, dict) {
 	tmp := "|"
 	for k in dict {
@@ -145,7 +147,7 @@ all_keys_list_box_value := temp . single_keys_list_box_value
 
 
 ; 创建 GUI
-Gui, Add, Tab3, w456 h320, 常规|法术|消耗品|装备|说明
+Gui, Add, Tab3, w456 h320, 常规|法术|消耗品|装备|按键映射|说明
 
 Gui, Tab, 
 Gui, Add, Button, Default w80 xm+188 y+4 gOnBtnApplyClicked, 应用
@@ -373,8 +375,31 @@ Loop 9 {
     Gui, Add, DropDownList, x+8 w80 %vLabel%, %temp%
 }
 
-; 说明
+; 按键映射
 Gui, Tab, 5
+
+Gui, Add, Text, xm+10 y+8 h18 0x200, 对原本的按键不做任何改动，并新增一个按键来实现相同功能
+Loop %gNumKeyMaps% {
+    iniRead, config, ER_A11y.ini, KeyMap, config%A_Index%
+    configArray := StrSplit(config, ";")
+    kmGameKey := configArray[1]
+    kmNewKey := configArray[2]
+
+    selection := findKeyFromDict(all_keys_map, kmGameKey)
+    temp := setListBoxParamSelection(all_keys_list_box_value, selection)
+    vLabel = vKmGameKey%A_Index%
+    Gui, Add, Text, xm+10 y+8 h18 0x200, 游戏的按键
+    Gui, Add, DropDownList, x+8 w120 %vLabel%, %temp%
+
+    selection := findKeyFromDict(all_keys_map, kmNewKey)
+    temp := setListBoxParamSelection(all_keys_list_box_value, selection)
+    vLabel = vKmNewKey%A_Index%
+    Gui, Add, Text, x+16 h18 0x200, 新的按键
+    Gui, Add, DropDownList, x+8 w120 %vLabel%, %temp%
+}
+
+; 说明
+Gui, Tab, 6
 Gui, Add, Text, xm+10 y+8 h18 0x200, 注意：　
 Gui, Add, Text, y+8, 1. 程序使用屏幕文字识别和发送按键操作实现，与游戏进程无任何关联。`n`n2. 当法术或消耗品的名称与背景的颜色区别不大时 (例如，在化圣雪原里)，`n   文字识别可能失败，造成切换变慢或者错误。`n`n3. 未识别到文字时，将长按切换键回到第一项，然后再切换到指定项(较慢)。`n`n4. 文字识别使用 CPU 计算，在低性能 CPU 上可能识别较慢。`n   测试使用的是 i7-11800H，可瞬间响应。`n`n5. 切换法术和消耗品功能很可能不兼容英文游戏界面 (未测试)
 
@@ -510,6 +535,16 @@ OnBtnApplyClicked:
 		eqpPos := equipment_positions.Item(EqpPos%A_Index%)
 		value := eqpKey . ";" . eqpType . ";" . eqpPos
 	    IniWrite, %value%, ER_A11y.ini, Equipment, config%A_Index%
+	}
+
+	; 记录按键映射设置
+	Loop %gNumKeyMaps% {
+	    GuiControlGet, KmGameKey%A_Index%
+		GuiControlGet, KmNewKey%A_Index%
+		kmGameKey := all_keys_map.Item(KmGameKey%A_Index%)
+		kmNewKey := all_keys_map.Item(KmNewKey%A_Index%)
+		value := kmGameKey . ";" . kmNewKey
+	    IniWrite, %value%, ER_A11y.ini, KeyMap, config%A_Index%
 	}
 
 	Run ER_A11y.ahk,,, PID
