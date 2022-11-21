@@ -53,6 +53,51 @@ if (switch_item_button) { ; 只有设置了游戏中的切换键，才能启用�
 ; 读取通用配置
 iniRead, clickInterval, ER_A11y.ini, Common, click_interval
 global click_interval := clickInterval ; 切换法术或消耗品时，两次按键的间隔时间
+iniRead, menuKeyInGame, ER_A11y.ini, Common, menu_button
+global menu_button := menuKeyInGame
+iniRead, confirmKeyInGame, ER_A11y.ini, Common, confirm_button
+global confirm_button := confirmKeyInGame
+
+; 读取装备配置
+iniRead, equipmentRegion, ER_A11y.ini, Equipment, equipment_region
+global equipment_dimen := StrSplit(equipmentRegion, ";") ; 游戏中显示装备的像素区域
+global arsenal_dimen := []
+arsenal_dimen.Push(equipment_dimen[1])
+arsenal_dimen.Push(equipment_dimen[2])
+arsenal_dimen.Push(equipment_dimen[3] * 0.915)
+arsenal_dimen.Push(equipment_dimen[4] * 0.985)
+; 计算装备的位置和尺寸
+equipment_width := (equipment_dimen[3] - equipment_dimen[1]) / 5 ; 装备格子宽度
+equipment_height := (equipment_dimen[4] - equipment_dimen[2]) / 6 ; 装备格子高度
+equipment_dimen[1] += equipment_width / 2 ; 用第 1、2 个元素保存首个装备格子中心坐标
+equipment_dimen[2] += equipment_height / 2 ; 用第 1、2 个元素保存首个装备格子中心坐标
+equipment_dimen[3] := equipment_width ; 用第 3、4 个元素保存下个装备格子偏移量
+equipment_dimen[4] := equipment_height ; 用第 3、4 个元素保存下个装备格子偏移量
+; 计算库存的位置和尺寸
+equipment_width := (arsenal_dimen[3] - arsenal_dimen[1]) / 5
+equipment_height := (arsenal_dimen[4] - arsenal_dimen[2]) / 6
+arsenal_dimen[1] += equipment_width / 2 ; 用第 1、2 个元素保存首个装备格子中心坐标
+arsenal_dimen[2] += equipment_height / 2 ; 用第 1、2 个元素保存首个装备格子中心坐标
+arsenal_dimen[3] := equipment_width ; 用第 3、4 个元素保存下个装备格子偏移量
+arsenal_dimen[4] := equipment_height ; 用第 3、4 个元素保存下个装备格子偏移量
+
+global eqp_types := []
+global eqp_positions := []
+if (menu_button) and (confirm_button) { ; 只有设置了游戏中的返回键和确认，才能启用该功能
+    Loop 9 {
+        iniRead, config, ER_A11y.ini, Equipment, config%A_Index%
+        configArray := StrSplit(config, ";")
+        key := configArray[1]
+        eqp_types.Push(configArray[2])
+        eqp_positions.Push(configArray[3])
+
+        if (key) {
+			labelName = switchEquippmentKey%A_Index%
+			hotkey, ~%key%, %labelName%
+			hotkey, ~%dodging_key_in_game% & ~%key%, %labelName%
+        }
+    }
+}
 
 ; 当匹配到多个可能的结果时，借助该变量可选取距离最近的结果
 global spellCurrentIndex := 0
@@ -359,6 +404,65 @@ switchItemKey9:
 switchItemKey10:
 	switchItem(10)
 	return
+
+
+; 按键切换装备
+switchEquippment(index) {
+	if (checkEldenRingWindow() = 0) {
+		return
+	}
+	type := eqp_types[index]
+    typeArr := StrSplit(type, "_")
+	pos := eqp_positions[index]
+    posArr := StrSplit(pos, "_")
+    long_interval := click_interval * 2
+
+    singlePress(menu_button, 1)
+    Sleep, % long_interval
+    singlePress(confirm_button, 1)
+    Sleep, % long_interval
+
+    LeftClick(equipment_dimen[1] + (equipment_dimen[3] * typeArr[1]), equipment_dimen[2] + (equipment_dimen[4] * typeArr[2]), long_interval)
+    LeftClick(arsenal_dimen[1] + (arsenal_dimen[3] * posArr[1]), arsenal_dimen[2] + (arsenal_dimen[4] * posArr[2]), long_interval)
+
+    singlePress(menu_button, 1)
+}
+
+switchEquippmentKey1:
+    switchEquippment(1)
+    return
+
+switchEquippmentKey2:
+    switchEquippment(2)
+    return
+
+switchEquippmentKey3:
+    switchEquippment(3)
+    return
+
+switchEquippmentKey4:
+    switchEquippment(4)
+    return
+
+switchEquippmentKey5:
+    switchEquippment(5)
+    return
+
+switchEquippmentKey6:
+    switchEquippment(6)
+    return
+
+switchEquippmentKey7:
+    switchEquippment(7)
+    return
+
+switchEquippmentKey8:
+    switchEquippment(8)
+    return
+
+switchEquippmentKey9:
+    switchEquippment(9)
+    return
 
 
 ; 翻滚与奔跑分离

@@ -45,6 +45,10 @@ findTextRegion(type) {
         key = Item_%width%_%height%
         iniRead, itemNameRegion, ER_A11y.ini, Resolution, %key%, 0;0;0;0
         return itemNameRegion
+    } else if (type = 2) { ; 查找装备显示区域的预设值
+        key = Eqp_%width%_%height%
+        iniRead, equipmentRegion, ER_A11y.ini, Resolution, %key%, 0;0;0;0
+        return equipmentRegion
     }
 }
 
@@ -137,7 +141,7 @@ all_keys_list_box_value := temp . single_keys_list_box_value
 
 
 ; 创建 GUI
-Gui, Add, Tab3, w456 h320, 常规|法术|消耗品|说明
+Gui, Add, Tab3, w456 h320, 常规|法术|消耗品|装备|说明
 
 Gui, Tab, 
 Gui, Add, Button, Default w80 xm+188 y+4 gOnBtnApplyClicked, 应用
@@ -295,9 +299,78 @@ Gui, Add, Text, x+0 cBlue gTextMeasureTipsClicked, 显示区域测量
 ; 武器设置
 Gui, Tab, 4
 
+equipment_types := ComObjCreate("Scripting.Dictionary")
+equipment_types.Add("右手武器1", "0_0")
+equipment_types.Add("右手武器2", "1_0")
+equipment_types.Add("右手武器3", "2_0")
+equipment_types.Add("左手武器1", "0_1")
+equipment_types.Add("左手武器2", "1_1")
+equipment_types.Add("左手武器3", "2_1")
+equipment_types.Add("防具1", "0_2")
+equipment_types.Add("防具2", "1_2")
+equipment_types.Add("防具3", "2_2")
+equipment_types.Add("防具4", "3_2")
+equipment_types.Add("护符1", "0_3")
+equipment_types.Add("护符2", "1_3")
+equipment_types.Add("护符3", "2_3")
+equipment_types.Add("护符4", "3_3")
+equipment_types.Add("弓箭1", "3_0")
+equipment_types.Add("弓箭2", "4_0")
+equipment_types.Add("弩箭1", "3_1")
+equipment_types.Add("弩箭2", "4_1")
+equipment_types_list_box_value := genListBoxParamFromDict(1, equipment_types)
+
+equipment_positions := ComObjCreate("Scripting.Dictionary")
+Loop 6 {
+    row := A_Index
+    Loop 5 {
+        cloumn := A_Index
+        key = 行%row% 列%cloumn%
+        value := cloumn-1 . "_" . row-1
+        equipment_positions.Add(key, value)
+    }
+}
+equipment_positions_list_box_value := genListBoxParamFromDict(1, equipment_positions)
+
+Gui, Add, Text, xm+10 y+8 h18 0x200, 快速切换武器、防具或护符
+
+iniRead, equipmentRegion, ER_A11y.ini, Equipment, equipment_region
+if (!equipmentRegion) { ; 未设置分辨率，尝试从配置文件中寻找预设值
+    equipmentRegion := findTextRegion(2)
+}
+Gui, Add, Text, xm+10 y+8 h18 0x200, 装备显示区域
+Gui, Add, Edit, r1 vEquipmentRegion x+8 w135, %equipmentRegion%
+Gui, Add, Text, x+8 h18 0x200, 如果切换失败，请查看
+Gui, Add, Text, x+0 h18 0x200 cBlue gEqpMeasureTipsClicked, 显示区域测量
+
+Loop 9 {
+    iniRead, config, ER_A11y.ini, Equipment, config%A_Index%
+    configArray := StrSplit(config, ";")
+    key := configArray[1]
+    type := configArray[2]
+    pos := configArray[3]
+
+    selection := findKeyFromDict(single_keys_map, key)
+    temp := setListBoxParamSelection(single_keys_list_box_value, selection)
+    vLabel = vEqpKey%A_Index%
+    Gui, Add, Text, xm+10 y+8 h18 0x200, 快捷键
+    Gui, Add, DropDownList, x+8 w80 %vLabel%, %temp%
+
+    selection := findKeyFromDict(equipment_types, type)
+    temp := setListBoxParamSelection(equipment_types_list_box_value, selection)
+    vLabel = vEqpType%A_Index%
+    Gui, Add, Text, x+8 h18 0x200, 装备类型
+    Gui, Add, DropDownList, x+8 w80 %vLabel%, %temp%
+
+    selection := findKeyFromDict(equipment_positions, pos)
+    temp := setListBoxParamSelection(equipment_positions_list_box_value, selection)
+    vLabel = vEqpPos%A_Index%
+    Gui, Add, Text, x+8 h18 0x200, 装备位置
+    Gui, Add, DropDownList, x+8 w80 %vLabel%, %temp%
+}
 
 ; 说明
-Gui, Tab, 4
+Gui, Tab, 5
 Gui, Add, Text, xm+10 y+8 h18 0x200, 注意：　
 Gui, Add, Text, y+8, 1. 程序使用屏幕文字识别和发送按键操作实现，与游戏进程无任何关联。`n`n2. 当法术或消耗品的名称与背景的颜色区别不大时 (例如，在化圣雪原里)，`n   文字识别可能失败，造成切换变慢或者错误。`n`n3. 未识别到文字时，将长按切换键回到第一项，然后再切换到指定项(较慢)。`n`n4. 文字识别使用 CPU 计算，在低性能 CPU 上可能识别较慢。`n   测试使用的是 i7-11800H，可瞬间响应。`n`n5. 切换法术和消耗品功能很可能不兼容英文游戏界面 (未测试)
 
@@ -310,6 +383,10 @@ Gui, Add, Text, y+0 cBlue gPaddleGithubClicked, 　 https://github.com/telppa/Pa
 Gui Show, w480 h360, EldenRing Accessibility
 return
 
+
+EqpMeasureTipsClicked:
+    Run res\\measure_equipment_region.jpg
+    return
 
 TextMeasureTipsClicked:
     Run res\\measure_text_region.jpg
@@ -412,6 +489,20 @@ OnBtnApplyClicked:
 	GuiControlGet, ItemNameRegion
 	IniWrite, % all_keys_map.Item(SwitchItemKey), ER_A11y.ini, Items, switch_item_button
 	IniWrite, %ItemNameRegion%, ER_A11y.ini, Items, item_name_region
+
+	; 记录装备设置
+	GuiControlGet, EquipmentRegion
+	IniWrite, %EquipmentRegion%, ER_A11y.ini, Equipment, equipment_region
+	Loop 9 {
+	    GuiControlGet, EqpKey%A_Index%
+		GuiControlGet, EqpType%A_Index%
+		GuiControlGet, EqpPos%A_Index%
+		eqpKey := EqpKey%A_Index%
+		eqpType := equipment_types.Item(EqpType%A_Index%)
+		eqpPos := equipment_positions.Item(EqpPos%A_Index%)
+		value := eqpKey . ";" . eqpType . ";" . eqpPos
+	    IniWrite, %value%, ER_A11y.ini, Equipment, config%A_Index%
+	}
 
 	Run ER_A11y.ahk,,, PID
 	return
