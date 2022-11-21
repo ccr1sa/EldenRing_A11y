@@ -162,6 +162,8 @@ Gui, Add, Text, xm+16 y+8, 　　游戏的翻滚操作是在按下并松开翻�
 
 Gui, Add, Text, xm+16 y+16 w420 0x10  ;Horizontal Line > Black
 
+
+; 通用设置
 addTitle("通用", 0)
 iniRead, menuKeyInGame, ER_A11y.ini, Common, menu_button
 selection := findKeyFromDict(single_keys_map, menuKeyInGame)
@@ -232,7 +234,7 @@ Gui, Add, Edit, r1 vSpellNameRegion x+8 w135, %spellNameRegion%
 Gui, Add, Text, cRed, 如果设置不正确，程序将总是通过长按切换键来切换。
 Gui, Add, Text, y+0, 如果你遇到上述问题，请使用PS、截图等工具测量该值。
 Gui, Add, Text, y+0, 要了解测量方法，请查看
-Gui, Add, Text, x+0 cBlue gMeasureTipsClicked, 文字区域测量.jpg
+Gui, Add, Text, x+0 cBlue gTextMeasureTipsClicked, 显示区域测量
 
 
 ; 消耗品设置
@@ -287,7 +289,7 @@ Gui, Add, Edit, r1 vItemNameRegion x+8 w135, %itemNameRegion%
 Gui, Add, Text, cRed, 如果设置不正确，程序将总是通过长按切换键来切换。
 Gui, Add, Text, y+0, 如果你遇到上述问题，请使用PS、截图等工具测量该值。
 Gui, Add, Text, y+0, 要了解测量方法，请查看
-Gui, Add, Text, x+0 cBlue gMeasureTipsClicked, 文字区域测量.jpg
+Gui, Add, Text, x+0 cBlue gTextMeasureTipsClicked, 显示区域测量
 
 
 ; 武器设置
@@ -309,8 +311,8 @@ Gui Show, w480 h360, EldenRing Accessibility
 return
 
 
-MeasureTipsClicked:
-    Run 文字区域测量.jpg
+TextMeasureTipsClicked:
+    Run res\\measure_text_region.jpg
     return
 
 MyGithubClicked:
