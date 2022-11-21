@@ -313,7 +313,7 @@ realSwitchItem(targetIndex, longPressWhenUnmatched) {
 		singlePress(switch_item_button, targetIndex - 1)
 	}
 
-	spellCurrentIndex := targetIndex
+	itemCurrentIndex := targetIndex
 }
 
 checkEldenRingWindow() {
