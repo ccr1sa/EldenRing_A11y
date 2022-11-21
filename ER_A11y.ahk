@@ -543,7 +543,7 @@ newDodgeingKey:
 	if (checkEldenRingWindow() = 0) {
 		return
 	}
-	Loop 4 {
+	Loop 2 {
 		Send {%dodging_key_in_game% up}
 		Send {%dodging_key_in_game% down}
 	}
