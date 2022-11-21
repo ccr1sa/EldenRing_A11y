@@ -92,6 +92,18 @@ singlePress(button, count:=1, interval:=-1) {
 	}
 }
 
+; 单击鼠标左键
+LeftClick(x, y, interval:=-1) {
+    if (interval < 0) {
+        interval := click_interval
+    }
+    ;不使用普通的 Click 语句，否则有较低的几率会点击不生效
+    Click, %x% %y% Down
+    Sleep, 10
+    Click, Up
+    Sleep % interval
+ }
+
 ; 使用指定长度和初始元素来创建数组
 initialArray(len, initialElement) {
 	result := []
