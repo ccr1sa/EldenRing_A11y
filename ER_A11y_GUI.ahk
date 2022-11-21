@@ -350,6 +350,8 @@ Loop 9 {
     Gui, Add, Text, x+8 h18 0x200, 装备位置
     Gui, Add, DropDownList, x+8 w80 vEqpPos%A_Index%, %equipment_positions_list_box_value%
     GuiControl, Choose, EqpPos%A_Index%, % getValueIndexFromDict(equipment_positions, pos, 1)
+
+    Gui, Add, Button, x+8 w18 h17 vClearEqp_%A_Index% gClearEqp, ✕
 }
 
 ; 按键映射
@@ -363,12 +365,14 @@ Loop %gNumKeyMaps% {
     kmNewKey := configArray[2]
 
     Gui, Add, Text, xm+10 y+8 h18 0x200, 游戏的按键
-    Gui, Add, DropDownList, x+8 w120 vKmGameKey%A_Index%, %all_keys_list_box_value%
+    Gui, Add, DropDownList, x+8 w128 vKmGameKey%A_Index%, %all_keys_list_box_value%
     GuiControl, Choose, KmGameKey%A_Index%, % getValueIndexFromDict(all_keys_map, kmGameKey, 1)
 
-    Gui, Add, Text, x+16 h18 0x200, 新的按键
-    Gui, Add, DropDownList, x+8 w120 vKmNewKey%A_Index%, %all_keys_list_box_value%
+    Gui, Add, Text, x+32 h18 0x200, 新的按键
+    Gui, Add, DropDownList, x+8 w128 vKmNewKey%A_Index%, %all_keys_list_box_value%
     GuiControl, Choose, KmNewKey%A_Index%, % getValueIndexFromDict(all_keys_map, kmNewKey, 1)
+
+    Gui, Add, Button, x+8 w18 h17 vClearKeyMap_%A_Index% gClearKeyMap, ✕
 }
 
 ; 说明
@@ -389,6 +393,25 @@ if (!FileExist("Dll\\PaddleOCR.dll")) {
 }
 return
 
+
+ClearEqp:
+    arr := StrSplit(A_GuiControl, "_")
+    index := arr[2]
+    if (index) {
+        GuiControl, Choose, EqpKey%index%, 1
+        GuiControl, Choose, EqpType%index%, 1
+        GuiControl, Choose, EqpPos%index%, 1
+    }
+    return
+
+ClearKeyMap:
+    arr := StrSplit(A_GuiControl, "_")
+    index := arr[2]
+    if (index) {
+        GuiControl, Choose, KmGameKey%index%, 1
+        GuiControl, Choose, KmNewKey%index%, 1
+    }
+    return
 
 EqpMeasureTipsClicked:
     Run res\\measure_equipment_region.jpg
