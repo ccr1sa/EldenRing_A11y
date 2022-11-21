@@ -107,7 +107,10 @@ return
 #Include PaddleOCR\PaddleOCR.ahk
 
 recogText(l, t, r, b) {
-	return PaddleOCR([l, t, r-l, b-t], {"use_mkldnn":1, "det_db_thresh": 0.3})
+    if (FileExist("Dll\\PaddleOCR.dll")) {
+	    return PaddleOCR([l, t, r-l, b-t], {"use_mkldnn":1, "det_db_thresh": 0.3})
+    }
+    return ""
 }
 
 ; 长按一个按键

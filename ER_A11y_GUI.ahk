@@ -377,10 +377,14 @@ Gui, Add, Text, y+8, 1. 程序使用屏幕文字识别和发送按键操作实�
 Gui, Add, Text, xm+10 y+16 h18 0x200, 其他：　
 Gui, Add, Text, y+8, 1. 这是一个开源项目
 Gui, Add, Text, y+0 cBlue gMyGithubClicked, 　 https://github.com/ccr1sa/EldenRing_A11y
-Gui, Add, Text, y+10, 2. 体积高达 380M 的原因是使用了光学字符识别库 PaddleOCR
+Gui, Add, Text, y+10, 2. 感谢光学字符识别库 PaddleOCR
 Gui, Add, Text, y+0 cBlue gPaddleGithubClicked, 　 https://github.com/telppa/PaddleOCR-AutoHotkey
 
 Gui Show, w480 h360, EldenRing Accessibility
+
+if (!FileExist("Dll\\PaddleOCR.dll")) {
+    MsgBox, % "未下载文字识别库，切换法术和消耗品将变得缓慢"
+}
 return
 
 
