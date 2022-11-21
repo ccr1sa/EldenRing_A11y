@@ -13,20 +13,14 @@ genListBoxParamFromDict(useK1orV0, dict) {
 	return tmp
 }
 
-setListBoxParamSelection(listBoxParam, selection) {
-	v1 := "|" . selection . "|"
-	v2 := "|" . selection . "||"
-	listBoxParam := StrReplace(listBoxParam, v1, v2)
-	return listBoxParam
-}
-
-findKeyFromDict(dict, value) {
+getValueIndexFromDict(dict, value, resultOffset) {
 	for k in dict {
 		v := dict.Item(k)
 		if (value = v) {
-			return k
+			return % (A_Index + resultOffset)
 		}
 	}
+	return resultOffset
 }
 
 addTitle(title, yOffset) {
@@ -157,17 +151,15 @@ Gui, Add, Button, Default w80 xm+188 y+4 gOnBtnApplyClicked, 应用
 Gui, Tab, 1
 
 iniRead, dodgingKeyInGame, ER_A11y.ini, Dodging, key_in_game
-selection := findKeyFromDict(all_keys_map, dodgingKeyInGame)
-temp := setListBoxParamSelection(all_keys_list_box_value, selection)
 addTitle("分离奔跑和翻滚按键", 10)
 Gui, Add, Text, xm+16 y+8 h18 0x200, 游戏的翻滚键
-Gui, Add, DropDownList, x+8 vDodgingKeyInGame, %temp%
+Gui, Add, DropDownList, x+8 vDodgingKeyInGame, %all_keys_list_box_value%
+GuiControl, Choose, DodgingKeyInGame, % getValueIndexFromDict(all_keys_map, dodgingKeyInGame, 1)
 
 iniRead, dodgingKeyDetached, ER_A11y.ini, Dodging, key_detached
-selection := findKeyFromDict(all_keys_map, dodgingKeyDetached)
-temp := setListBoxParamSelection(all_keys_list_box_value, selection)
 Gui, Add, Text, x+8 h18 0x200, 新的翻滚键
-Gui, Add, DropDownList, x+8 vDodgingKeyDetached, %temp%
+Gui, Add, DropDownList, x+8 vDodgingKeyDetached, %all_keys_list_box_value%
+GuiControl, Choose, DodgingKeyDetached, % getValueIndexFromDict(all_keys_map, dodgingKeyDetached, 1)
 Gui, Add, Text, xm+16 y+8, 　　游戏的翻滚操作是在按下并松开翻滚键后触发的，如果松开较慢，则会出`n现翻滚延迟。这里可以设置一个新的翻滚键，当按下它时，会立刻发送按下翻`n滚键和松开翻滚键2个操作，实现在按下时触发翻滚。
 
 Gui, Add, Text, xm+16 y+16 w420 0x10  ;Horizontal Line > Black
@@ -176,15 +168,14 @@ Gui, Add, Text, xm+16 y+16 w420 0x10  ;Horizontal Line > Black
 ; 通用设置
 addTitle("通用", 0)
 iniRead, menuKeyInGame, ER_A11y.ini, Common, menu_button
-selection := findKeyFromDict(single_keys_map, menuKeyInGame)
-temp := setListBoxParamSelection(single_keys_list_box_value, selection)
 Gui, Add, Text, xm+16 y+8 h18 0x200, 游戏的菜单键
-Gui, Add, DropDownList, x+8 vMenuKeyInGame, %temp%
+Gui, Add, DropDownList, x+8 vMenuKeyInGame, %single_keys_list_box_value%
+GuiControl, Choose, MenuKeyInGame, % getValueIndexFromDict(single_keys_map, menuKeyInGame, 1)
+
 iniRead, confirmKeyInGame, ER_A11y.ini, Common, confirm_button
-selection := findKeyFromDict(single_keys_map, confirmKeyInGame)
-temp := setListBoxParamSelection(single_keys_list_box_value, selection)
 Gui, Add, Text, xm+16 y+8 h18 0x200, 游戏的确认键
-Gui, Add, DropDownList, x+8 vConfirmKeyInGame, %temp%
+Gui, Add, DropDownList, x+8 vConfirmKeyInGame, %single_keys_list_box_value%
+GuiControl, Choose, ConfirmKeyInGame, % getValueIndexFromDict(single_keys_map, confirmKeyInGame, 1)
 
 iniRead, clickInterval, ER_A11y.ini, Common, click_interval
 Gui, Add, Text, xm+16 y+8 h18 0x200, 切换法术和消耗品的间隔时间
@@ -212,28 +203,24 @@ Gui, Add, Edit, r1 vEquippedSpell10 x+8 w80, % equippedSpellArray[10]
 Gui, Add, Text, xm+10 y+10 h18 0x200, ↑填写你记忆的法术　　　　　　　　　　　　　　　　　设置各个法术的按键↓
 iniRead, switchSpellKeysDetached, ER_A11y.ini, Spells, key_detached
 switchSpellKeyArray := StrSplit(switchSpellKeysDetached, ";")
-tempArr := []
+Gui, Add, DropDownList, xm+10 y+8 w80 vSwitchSpellKeyDetached1, % single_keys_list_box_value
+Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached2, % single_keys_list_box_value
+Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached3, % single_keys_list_box_value
+Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached4, % single_keys_list_box_value
+Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached5, % single_keys_list_box_value
+Gui, Add, DropDownList, xm+10 y+4 w80 vSwitchSpellKeyDetached6, % single_keys_list_box_value
+Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached7, % single_keys_list_box_value
+Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached8, % single_keys_list_box_value
+Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached9, % single_keys_list_box_value
+Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached10, % single_keys_list_box_value
 Loop 10 {
-	selection := findKeyFromDict(single_keys_map, switchSpellKeyArray[A_Index])
-	temp := setListBoxParamSelection(single_keys_list_box_value, selection)
-	tempArr.Push(temp)
+    GuiControl, Choose, SwitchSpellKeyDetached%A_Index%, % getValueIndexFromDict(single_keys_map, switchSpellKeyArray[A_Index], 1)
 }
-Gui, Add, DropDownList, xm+10 y+8 w80 vSwitchSpellKeyDetached1, % tempArr[1]
-Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached2, % tempArr[2]
-Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached3, % tempArr[3]
-Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached4, % tempArr[4]
-Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached5, % tempArr[5]
-Gui, Add, DropDownList, xm+10 y+4 w80 vSwitchSpellKeyDetached6, % tempArr[6]
-Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached7, % tempArr[7]
-Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached8, % tempArr[8]
-Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached9, % tempArr[9]
-Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached10, % tempArr[10]
 
 iniRead, switchSpellButton, ER_A11y.ini, Spells, switch_spell_button
-selection := findKeyFromDict(all_keys_map, switchSpellButton)
-temp := setListBoxParamSelection(all_keys_list_box_value, selection)
 Gui, Add, Text, xm+10 y+8 h18 0x200, 游戏的切换法术键　
-Gui, Add, DropDownList, x+8 vSwitchSpellKey, %temp%
+Gui, Add, DropDownList, x+8 vSwitchSpellKey, %all_keys_list_box_value%
+GuiControl, Choose, SwitchSpellKey, % getValueIndexFromDict(all_keys_map, switchSpellButton, 1)
 
 iniRead, spellNameRegion, ER_A11y.ini, Spells, spell_name_region
 if (!spellNameRegion) { ; 未设置分辨率，尝试从配置文件中寻找预设值
@@ -267,28 +254,24 @@ Gui, Add, Edit, r1 vEquippedItem10 x+8 w80, % equippedItemArray[10]
 Gui, Add, Text, xm+10 y+10 h18 0x200, ↑填写你携带的消耗品　　　　　　　　　　　　　　　设置各个消耗品的按键↓
 iniRead, switchItemKeysDetached, ER_A11y.ini, Items, key_detached
 switchItemKeyArray := StrSplit(switchItemKeysDetached, ";")
-tempArr := []
+Gui, Add, DropDownList, xm+10 y+8 w80 vSwitchItemKeyDetached1, % single_keys_list_box_value
+Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached2, % single_keys_list_box_value
+Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached3, % single_keys_list_box_value
+Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached4, % single_keys_list_box_value
+Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached5, % single_keys_list_box_value
+Gui, Add, DropDownList, xm+10 y+4 w80 vSwitchItemKeyDetached6, % single_keys_list_box_value
+Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached7, % single_keys_list_box_value
+Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached8, % single_keys_list_box_value
+Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached9, % single_keys_list_box_value
+Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached10, % single_keys_list_box_value
 Loop 10 {
-	selection := findKeyFromDict(single_keys_map, switchItemKeyArray[A_Index])
-	temp := setListBoxParamSelection(single_keys_list_box_value, selection)
-	tempArr.Push(temp)
+    GuiControl, Choose, SwitchItemKeyDetached%A_Index%, % getValueIndexFromDict(single_keys_map, switchItemKeyArray[A_Index], 1)
 }
-Gui, Add, DropDownList, xm+10 y+8 w80 vSwitchItemKeyDetached1, % tempArr[1]
-Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached2, % tempArr[2]
-Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached3, % tempArr[3]
-Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached4, % tempArr[4]
-Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached5, % tempArr[5]
-Gui, Add, DropDownList, xm+10 y+4 w80 vSwitchItemKeyDetached6, % tempArr[6]
-Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached7, % tempArr[7]
-Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached8, % tempArr[8]
-Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached9, % tempArr[9]
-Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached10, % tempArr[10]
 
 iniRead, switchItemButton, ER_A11y.ini, Items, switch_item_button
-selection := findKeyFromDict(all_keys_map, switchItemButton)
-temp := setListBoxParamSelection(all_keys_list_box_value, selection)
 Gui, Add, Text, xm+10 y+8 h18 0x200, 游戏的切换消耗品键
-Gui, Add, DropDownList, x+8 vSwitchItemKey, %temp%
+Gui, Add, DropDownList, x+8 vSwitchItemKey, %all_keys_list_box_value%
+GuiControl, Choose, SwitchItemKey, % getValueIndexFromDict(all_keys_map, switchItemButton, 1)
 
 iniRead, itemNameRegion, ER_A11y.ini, Items, item_name_region
 if (!itemNameRegion) { ; 未设置分辨率，尝试从配置文件中寻找预设值
@@ -356,23 +339,17 @@ Loop 9 {
     type := configArray[2]
     pos := configArray[3]
 
-    selection := findKeyFromDict(single_keys_map, key)
-    temp := setListBoxParamSelection(single_keys_list_box_value, selection)
-    vLabel = vEqpKey%A_Index%
     Gui, Add, Text, xm+10 y+8 h18 0x200, 快捷键
-    Gui, Add, DropDownList, x+8 w80 %vLabel%, %temp%
+    Gui, Add, DropDownList, x+8 w80 vEqpKey%A_Index%, %single_keys_list_box_value%
+    GuiControl, Choose, EqpKey%A_Index%, % getValueIndexFromDict(single_keys_map, key, 1)
 
-    selection := findKeyFromDict(equipment_types, type)
-    temp := setListBoxParamSelection(equipment_types_list_box_value, selection)
-    vLabel = vEqpType%A_Index%
     Gui, Add, Text, x+8 h18 0x200, 装备类型
-    Gui, Add, DropDownList, x+8 w80 %vLabel%, %temp%
+    Gui, Add, DropDownList, x+8 w80 vEqpType%A_Index%, %equipment_types_list_box_value%
+    GuiControl, Choose, EqpType%A_Index%, % getValueIndexFromDict(equipment_types, type, 1)
 
-    selection := findKeyFromDict(equipment_positions, pos)
-    temp := setListBoxParamSelection(equipment_positions_list_box_value, selection)
-    vLabel = vEqpPos%A_Index%
     Gui, Add, Text, x+8 h18 0x200, 装备位置
-    Gui, Add, DropDownList, x+8 w80 %vLabel%, %temp%
+    Gui, Add, DropDownList, x+8 w80 vEqpPos%A_Index%, %equipment_positions_list_box_value%
+    GuiControl, Choose, EqpPos%A_Index%, % getValueIndexFromDict(equipment_positions, pos, 1)
 }
 
 ; 按键映射
@@ -385,17 +362,13 @@ Loop %gNumKeyMaps% {
     kmGameKey := configArray[1]
     kmNewKey := configArray[2]
 
-    selection := findKeyFromDict(all_keys_map, kmGameKey)
-    temp := setListBoxParamSelection(all_keys_list_box_value, selection)
-    vLabel = vKmGameKey%A_Index%
     Gui, Add, Text, xm+10 y+8 h18 0x200, 游戏的按键
-    Gui, Add, DropDownList, x+8 w120 %vLabel%, %temp%
+    Gui, Add, DropDownList, x+8 w120 vKmGameKey%A_Index%, %all_keys_list_box_value%
+    GuiControl, Choose, KmGameKey%A_Index%, % getValueIndexFromDict(all_keys_map, kmGameKey, 1)
 
-    selection := findKeyFromDict(all_keys_map, kmNewKey)
-    temp := setListBoxParamSelection(all_keys_list_box_value, selection)
-    vLabel = vKmNewKey%A_Index%
     Gui, Add, Text, x+16 h18 0x200, 新的按键
-    Gui, Add, DropDownList, x+8 w120 %vLabel%, %temp%
+    Gui, Add, DropDownList, x+8 w120 vKmNewKey%A_Index%, %all_keys_list_box_value%
+    GuiControl, Choose, KmNewKey%A_Index%, % getValueIndexFromDict(all_keys_map, kmNewKey, 1)
 }
 
 ; 说明
