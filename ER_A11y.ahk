@@ -135,9 +135,9 @@ recogText(l, t, r, b) {
 
 ; 长按一个按键
 longPress(button) {
-    Send {%button% Down}
+    Send {%button% down}
     Sleep 650
-    Send {%button% Up}
+    Send {%button% up}
 }
 
 ; 单击或连击一个按键
@@ -146,15 +146,15 @@ singlePress(button, count:=1, interval:=-1) {
         interval := click_interval
     }
     if (count = 1) {
-		Send {%button% Down}e
+		Send {%button% down}
 		Sleep 10
-    	Send {%Button% Up}
+    	Send {%button% up}
 		Sleep % interval
     } else {
         Loop %count% {
-            Send {%button% Down}
+            Send {%button% down}
             Sleep 10
-            Send {%Button% Up}
+            Send {%button% up}
             Sleep % interval
         }
 	}
@@ -325,7 +325,6 @@ checkEldenRingWindow() {
 	}
 	return 0
 }
-
 
 ; 按键切换法术
 switchSpell(targetIndex) {
