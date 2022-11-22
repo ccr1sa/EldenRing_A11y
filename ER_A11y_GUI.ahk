@@ -144,7 +144,7 @@ all_keys_list_box_value := temp . single_keys_list_box_value
 Gui, Add, Tab3, w456 h320, 常规|法术|消耗品|装备|按键映射|说明
 
 Gui, Tab, 
-Gui, Add, Button, Default w80 xm+188 y+4 gOnBtnApplyClicked, 应用
+Gui, Add, Button, Default w80 xm+188 y+4 gOnBtnApplyClicked, 开始
 
 
 ; 翻滚设置
