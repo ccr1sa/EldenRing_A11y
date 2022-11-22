@@ -22,7 +22,7 @@ hotkeyWithDash(hotkey, callback) {
     result = ~%dodging_key_in_game% & ~%hotkey%
 
     ; 对于小键盘的按键，当按住 Shift 时，将无法触发 ~LShift & ~Numpad1，而是触发 ~NumpadEnd
-    if (%dodging_key_in_game% = LShift) or (%dodging_key_in_game% = RShift) {
+    if (dodging_key_in_game = "LShift") or (dodging_key_in_game = "RShift") {
         Switch hotkey
         {
             Case "NumpadDot": result = ~NumPadDel
