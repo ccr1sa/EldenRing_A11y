@@ -373,10 +373,10 @@ Loop %mNumKeyMaps% {
 ; 说明
 Gui, Tab, 6
 Gui, Add, Text, xm+10 y+8 h18 0x200, 注意：　
-Gui, Add, Text, y+8, 1. 程序的原理是屏幕文字识别和模拟按键操作，与游戏进程无任何关系。`n`n2. 当法术或消耗品的名称与背景的颜色区别不大时 (例如，在化圣雪原里)，`n   文字识别可能失败，造成切换变慢或者错误。`n`n3. 未识别到文字时，将长按切换键回到第一项，然后再切换到指定项(较慢)。`n`n4. 翻滚与奔跑分离功能存在 Bug：在按住奔跑键时，再按下新的翻滚键，然后`n   在恰当的时机松开奔跑键，将会连续翻滚两次。(很少发生)`n`n5. 切换法术和消耗品功能很可能不兼容英文游戏界面 (未测试)
+Gui, Add, Text, y+8, 1. 程序的原理是屏幕文字识别和模拟按键操作，与游戏进程无任何关系。`n`n2. 当法术或消耗品的名称与背景的颜色区别不大时 (例如，在化圣雪原里)，`n   文字识别可能失败，造成切换变慢或者错误。`n`n3. 未识别到文字时，将长按切换键回到第一项，然后再切换到指定项。`n`n4. 如果游戏的翻滚键是 Shift，在角色奔跑(按住翻滚键)时，再按下小键盘`n   的快捷键，可能会导致角色停止奔跑。`n`n5. 切换法术和消耗品功能可能不兼容英文游戏界面。
 
 Gui, Add, Text, xm+10 y+16 h18 0x200, 其他：　
-Gui, Add, Text, y+8, 1. 这是一个开源项目
+Gui, Add, Text, y+8, 1. 此程序是一个开源项目
 Gui, Add, Text, y+0 cBlue gMyGithubClicked, 　 https://github.com/ccr1sa/EldenRing_A11y
 Gui, Add, Text, y+10, 2. 感谢光学字符识别库 PaddleOCR
 Gui, Add, Text, y+0 cBlue gPaddleGithubClicked, 　 https://github.com/telppa/PaddleOCR-AutoHotkey
