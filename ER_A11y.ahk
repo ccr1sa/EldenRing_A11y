@@ -14,6 +14,34 @@ if (dodging_key_in_game) { ; 只有设置了游戏中的切换键，才能启用
 	}
 }
 
+hotkeyWithDash(hotkey, callback) {
+    ; 未设置翻滚键，不执行操作
+    if (!dodging_key_in_game) {
+        return
+    }
+    result = ~%dodging_key_in_game% & ~%hotkey%
+
+    ; 对于小键盘的按键，当按住 Shift 时，将无法触发 ~LShift & ~Numpad1，而是触发 ~NumpadEnd
+    if (%dodging_key_in_game% = LShift) or (%dodging_key_in_game% = RShift) {
+        Switch hotkey
+        {
+            Case "NumpadDot": result = ~NumPadDel
+            Case "Numpad0": result = ~NumpadIns
+            Case "Numpad1": result = ~NumpadEnd
+            Case "Numpad2": result = ~NumpadDown
+            Case "Numpad3": result = ~NumpadPgDn
+            Case "Numpad4": result = ~NumpadLeft
+            Case "Numpad5": result = ~NumpadClear
+            Case "Numpad6": result = ~NumpadRight
+            Case "Numpad7": result = ~NumpadHome
+            Case "Numpad8": result = ~NumpadUp
+            Case "Numpad9": result = ~NumpadPgUp
+            Default:
+        }
+    }
+    hotkey, % result, % callback
+}
+
 ; 读取法术配置
 iniRead, equippedSpells, ER_A11y.ini, Spells, equipped_spells
 global equipped_spells := StrSplit(equippedSpells, ";") ; 已装备的法术列表
@@ -28,7 +56,7 @@ if (switch_spell_button) { ; 只有设置了游戏中的切换键，才能启用
 		if (key) {
 	        funcSwitchSpell := Func("switchSpell").Bind(i)
 			Hotkey, ~%key%, % funcSwitchSpell
-			Hotkey, ~%dodging_key_in_game% & ~%key%, % funcSwitchSpell
+		    hotkeyWithDash(key, funcSwitchSpell)
 		}
 	}
 }
@@ -47,7 +75,7 @@ if (switch_item_button) { ; 只有设置了游戏中的切换键，才能启用�
 		if (key) {
 	        funcSwitchItem := Func("switchItem").Bind(i)
 			hotkey, ~%key%, % funcSwitchItem
-			hotkey, ~%dodging_key_in_game% & ~%key%, % funcSwitchItem
+		    hotkeyWithDash(key, funcSwitchItem)
 		}
 	}
 }
@@ -96,7 +124,7 @@ if (menu_button) and (confirm_button) { ; 只有设置了游戏中的返回键�
         if (key) {
 	        funcSwitchEqp := Func("switchEquippment").Bind(A_Index)
 			hotkey, ~%key%, % funcSwitchEqp
-			hotkey, ~%dodging_key_in_game% & ~%key%, % funcSwitchEqp
+		    hotkeyWithDash(key, funcSwitchEqp)
         }
     }
 }
@@ -112,9 +140,7 @@ Loop %gNumKeyMaps% {
     if (kmNewKey) {
     	funcSendMappedKey := Func("sendMappedKey").Bind(A_Index)
         hotkey, ~%kmNewKey%, % funcSendMappedKey
-        if (dodging_key_in_game) {
-            hotkey, ~%dodging_key_in_game% & ~%kmNewKey%, % funcSendMappedKey
-        }
+        hotkeyWithDash(kmNewKey, funcSendMappedKey)
     }
 }
 
