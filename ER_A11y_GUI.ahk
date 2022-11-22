@@ -1,7 +1,10 @@
 #SingleInstance Force
 #NoTrayIcon
 
-global gNumKeyMaps := 10
+global mNumSpellHotkeys := 10
+global mNumItemHotkeys := 10
+global mNumEqpHotKeys := 9
+global mNumKeyMaps := 10
 
 genListBoxParamFromDict(useK1orV0, dict) {
 	tmp := "|"
@@ -189,31 +192,27 @@ Gui, Tab, 2
 Gui, Add, Text, xm+10 y+8 h18 0x200, 为每一个法术设置单独的选择按键
 iniRead, equippedSpells, ER_A11y.ini, Spells, equipped_spells
 equippedSpellArray := StrSplit(equippedSpells, ";")
-Gui, Add, Edit, r1 vEquippedSpell1 xm+10 y+8 w80, % equippedSpellArray[1] 
-Gui, Add, Edit, r1 vEquippedSpell2 x+8 w80, % equippedSpellArray[2] 
-Gui, Add, Edit, r1 vEquippedSpell3 x+8 w80, % equippedSpellArray[3] 
-Gui, Add, Edit, r1 vEquippedSpell4 x+8 w80, % equippedSpellArray[4] 
-Gui, Add, Edit, r1 vEquippedSpell5 x+8 w80, % equippedSpellArray[5] 
-Gui, Add, Edit, r1 vEquippedSpell6 xm+10 y+4 w80, % equippedSpellArray[6] 
-Gui, Add, Edit, r1 vEquippedSpell7 x+8 w80, % equippedSpellArray[7] 
-Gui, Add, Edit, r1 vEquippedSpell8 x+8 w80, % equippedSpellArray[8] 
-Gui, Add, Edit, r1 vEquippedSpell9 x+8 w80, % equippedSpellArray[9] 
-Gui, Add, Edit, r1 vEquippedSpell10 x+8 w80, % equippedSpellArray[10] 
+Loop %mNumSpellHotkeys% {
+    pos = x+8
+    if (A_Index = 1) {
+        pos = xm+10 y+8
+    } else if (A_Index = 6) {
+        pos = xm+10 y+4
+    }
+    Gui, Add, Edit, r1 vEquippedSpell%A_Index% w80 %pos%, % equippedSpellArray[A_Index]
+}
 
 Gui, Add, Text, xm+10 y+10 h18 0x200, ↑填写你记忆的法术　　　　　　　　　　　　　　　　　设置各个法术的按键↓
 iniRead, switchSpellKeysDetached, ER_A11y.ini, Spells, key_detached
 switchSpellKeyArray := StrSplit(switchSpellKeysDetached, ";")
-Gui, Add, DropDownList, xm+10 y+8 w80 vSwitchSpellKeyDetached1, % single_keys_list_box_value
-Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached2, % single_keys_list_box_value
-Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached3, % single_keys_list_box_value
-Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached4, % single_keys_list_box_value
-Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached5, % single_keys_list_box_value
-Gui, Add, DropDownList, xm+10 y+4 w80 vSwitchSpellKeyDetached6, % single_keys_list_box_value
-Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached7, % single_keys_list_box_value
-Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached8, % single_keys_list_box_value
-Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached9, % single_keys_list_box_value
-Gui, Add, DropDownList, x+8 w80 vSwitchSpellKeyDetached10, % single_keys_list_box_value
-Loop 10 {
+Loop %mNumSpellHotkeys% {
+    pos = x+8
+    if (A_Index = 1) {
+        pos = xm+10 y+8
+    } else if (A_Index = 6) {
+        pos = xm+10 y+4
+    }
+    Gui, Add, DropDownList, vSwitchSpellKeyDetached%A_Index% w80 %pos%, % single_keys_list_box_value
     GuiControl, Choose, SwitchSpellKeyDetached%A_Index%, % getValueIndexFromDict(single_keys_map, switchSpellKeyArray[A_Index], 1)
 }
 
@@ -240,31 +239,27 @@ Gui, Tab, 3
 Gui, Add, Text, xm+10 y+8 h18 0x200, 为每一个消耗品设置单独的选择按键
 iniRead, equippedItems, ER_A11y.ini, Items, equipped_items
 equippedItemArray := StrSplit(equippedItems, ";")
-Gui, Add, Edit, r1 vEquippedItem1 xm+10 y+8 w80, % equippedItemArray[1] 
-Gui, Add, Edit, r1 vEquippedItem2 x+8 w80, % equippedItemArray[2] 
-Gui, Add, Edit, r1 vEquippedItem3 x+8 w80, % equippedItemArray[3] 
-Gui, Add, Edit, r1 vEquippedItem4 x+8 w80, % equippedItemArray[4] 
-Gui, Add, Edit, r1 vEquippedItem5 x+8 w80, % equippedItemArray[5] 
-Gui, Add, Edit, r1 vEquippedItem6 xm+10 y+4 w80, % equippedItemArray[6] 
-Gui, Add, Edit, r1 vEquippedItem7 x+8 w80, % equippedItemArray[7] 
-Gui, Add, Edit, r1 vEquippedItem8 x+8 w80, % equippedItemArray[8] 
-Gui, Add, Edit, r1 vEquippedItem9 x+8 w80, % equippedItemArray[9] 
-Gui, Add, Edit, r1 vEquippedItem10 x+8 w80, % equippedItemArray[10] 
+Loop %mNumItemHotkeys% {
+    pos = x+8
+    if (A_Index = 1) {
+        pos = xm+10 y+8
+    } else if (A_Index = 6) {
+        pos = xm+10 y+4
+    }
+    Gui, Add, Edit, r1 vEquippedItem%A_Index% w80 %pos%, % equippedItemArray[A_Index]
+}
 
 Gui, Add, Text, xm+10 y+10 h18 0x200, ↑填写你携带的消耗品　　　　　　　　　　　　　　　设置各个消耗品的按键↓
 iniRead, switchItemKeysDetached, ER_A11y.ini, Items, key_detached
 switchItemKeyArray := StrSplit(switchItemKeysDetached, ";")
-Gui, Add, DropDownList, xm+10 y+8 w80 vSwitchItemKeyDetached1, % single_keys_list_box_value
-Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached2, % single_keys_list_box_value
-Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached3, % single_keys_list_box_value
-Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached4, % single_keys_list_box_value
-Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached5, % single_keys_list_box_value
-Gui, Add, DropDownList, xm+10 y+4 w80 vSwitchItemKeyDetached6, % single_keys_list_box_value
-Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached7, % single_keys_list_box_value
-Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached8, % single_keys_list_box_value
-Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached9, % single_keys_list_box_value
-Gui, Add, DropDownList, x+8 w80 vSwitchItemKeyDetached10, % single_keys_list_box_value
-Loop 10 {
+Loop %mNumItemHotkeys% {
+    pos = x+8
+    if (A_Index = 1) {
+        pos = xm+10 y+8
+    } else if (A_Index = 6) {
+        pos = xm+10 y+4
+    }
+    Gui, Add, DropDownList, vSwitchItemKeyDetached%A_Index% w80 %pos%, % single_keys_list_box_value
     GuiControl, Choose, SwitchItemKeyDetached%A_Index%, % getValueIndexFromDict(single_keys_map, switchItemKeyArray[A_Index], 1)
 }
 
@@ -332,7 +327,7 @@ Gui, Add, Edit, r1 vEquipmentRegion x+8 w135, %equipmentRegion%
 Gui, Add, Text, x+8 h18 0x200, 如果切换失败，请查看
 Gui, Add, Text, x+0 h18 0x200 cBlue gEqpMeasureTipsClicked, 显示区域测量
 
-Loop 9 {
+Loop %mNumEqpHotKeys% {
     iniRead, config, ER_A11y.ini, Equipment, config%A_Index%
     configArray := StrSplit(config, ";")
     key := configArray[1]
@@ -358,7 +353,7 @@ Loop 9 {
 Gui, Tab, 5
 
 Gui, Add, Text, xm+10 y+8 h18 0x200, 对原本的按键不做任何改动，并新增一个按键来实现相同功能
-Loop %gNumKeyMaps% {
+Loop %mNumKeyMaps% {
     iniRead, config, ER_A11y.ini, KeyMap, config%A_Index%
     configArray := StrSplit(config, ";")
     kmGameKey := configArray[1]
@@ -453,7 +448,7 @@ OnBtnApplyClicked:
 
 	; 记录已记忆的法术
 	EquippedSpellsString := ""
-	Loop 10 {
+	Loop %mNumSpellHotkeys% {
 	    GuiControlGet, EquippedSpell%A_Index%
 		value := EquippedSpell%A_Index%
 		if (!value) {
@@ -469,7 +464,7 @@ OnBtnApplyClicked:
 
 	; 记录切换法术按键
 	SwitchSpellKeysString := ""
-	Loop 10 {
+	Loop %mNumSpellHotkeys% {
 	    GuiControlGet, SwitchSpellKeyDetached%A_Index%
 		value := SwitchSpellKeyDetached%A_Index%
 		if (A_Index != 1) {
@@ -487,7 +482,7 @@ OnBtnApplyClicked:
 
 	; 记录已装备的消耗品
 	EquippedItemsString := ""
-	Loop 10 {
+	Loop %mNumItemHotkeys% {
 	    GuiControlGet, EquippedItem%A_Index%
 		value := EquippedItem%A_Index%
 		if (!value) {
@@ -503,7 +498,7 @@ OnBtnApplyClicked:
 
 	; 记录切换消耗品按键
 	SwitchItemKeysString := ""
-	Loop 10 {
+	Loop %mNumItemHotkeys% {
 	    GuiControlGet, SwitchItemKeyDetached%A_Index%
 		value := SwitchItemKeyDetached%A_Index%
 		if (A_Index != 1) {
@@ -522,7 +517,7 @@ OnBtnApplyClicked:
 	; 记录装备设置
 	GuiControlGet, EquipmentRegion
 	IniWrite, %EquipmentRegion%, ER_A11y.ini, Equipment, equipment_region
-	Loop 9 {
+	Loop %mNumEqpHotKeys% {
 	    GuiControlGet, EqpKey%A_Index%
 		GuiControlGet, EqpType%A_Index%
 		GuiControlGet, EqpPos%A_Index%
@@ -534,7 +529,7 @@ OnBtnApplyClicked:
 	}
 
 	; 记录按键映射设置
-	Loop %gNumKeyMaps% {
+	Loop %mNumKeyMaps% {
 	    GuiControlGet, KmGameKey%A_Index%
 		GuiControlGet, KmNewKey%A_Index%
 		kmGameKey := all_keys_map.Item(KmGameKey%A_Index%)
