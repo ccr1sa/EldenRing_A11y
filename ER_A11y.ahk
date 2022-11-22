@@ -26,9 +26,9 @@ if (switch_spell_button) { ; 只有设置了游戏中的切换键，才能启用
 	global switchSpellKeys := StrSplit(keyDetached1, ";")
 	for i, key in switchSpellKeys {
 		if (key) {
-			labelName := "switchSpellKey" + i
-			hotkey, ~%key%, %labelName%
-			hotkey, ~%dodging_key_in_game% & ~%key%, %labelName%
+	        funcSwitchSpell := Func("switchSpell").Bind(i)
+			Hotkey, ~%key%, % funcSwitchSpell
+			Hotkey, ~%dodging_key_in_game% & ~%key%, % funcSwitchSpell
 		}
 	}
 }
@@ -45,9 +45,9 @@ if (switch_item_button) { ; 只有设置了游戏中的切换键，才能启用�
 	global switchItemKeys := StrSplit(keyDetached2, ";")
 	for i, key in switchItemKeys {
 		if (key) {
-			labelName := "switchItemKey" + i
-			hotkey, ~%key%, %labelName%
-			hotkey, ~%dodging_key_in_game% & ~%key%, %labelName%
+	        funcSwitchItem := Func("switchItem").Bind(i)
+			hotkey, ~%key%, % funcSwitchItem
+			hotkey, ~%dodging_key_in_game% & ~%key%, % funcSwitchItem
 		}
 	}
 }
@@ -94,9 +94,9 @@ if (menu_button) and (confirm_button) { ; 只有设置了游戏中的返回键�
         eqp_positions.Push(configArray[3])
 
         if (key) {
-			labelName = switchEquippmentKey%A_Index%
-			hotkey, ~%key%, %labelName%
-			hotkey, ~%dodging_key_in_game% & ~%key%, %labelName%
+	        funcSwitchEqp := Func("switchEquippment").Bind(A_Index)
+			hotkey, ~%key%, % funcSwitchEqp
+			hotkey, ~%dodging_key_in_game% & ~%key%, % funcSwitchEqp
         }
     }
 }
@@ -110,14 +110,13 @@ Loop %gNumKeyMaps% {
     kmNewKey := configArray[2]
 
     if (kmNewKey) {
-        labelName = keyMap%A_Index%
-        hotkey, ~%kmNewKey%, %labelName%
+    	funcSendMappedKey := Func("sendMappedKey").Bind(A_Index)
+        hotkey, ~%kmNewKey%, % funcSendMappedKey
         if (dodging_key_in_game) {
-            hotkey, ~%dodging_key_in_game% & ~%kmNewKey%, %labelName%
+            hotkey, ~%dodging_key_in_game% & ~%kmNewKey%, % funcSendMappedKey
         }
     }
 }
-
 
 ; 当匹配到多个可能的结果时，借助该变量可选取距离最近的结果
 global spellCurrentIndex := 0
@@ -336,47 +335,6 @@ switchSpell(targetIndex) {
 	realSwitchSpell(targetIndex, false)
 }
 
-switchSpellKey1:
-	switchSpell(1)
-	return
-
-switchSpellKey2:
-	switchSpell(2)
-	return
-
-switchSpellKey3:
-	switchSpell(3)
-	return
-
-switchSpellKey4:
-	switchSpell(4)
-	return
-
-switchSpellKey5:
-	switchSpell(5)
-	return
-
-switchSpellKey6:
-	switchSpell(6)
-	return
-
-switchSpellKey7:
-	switchSpell(7)
-	return
-
-switchSpellKey8:
-	switchSpell(8)
-	return
-
-switchSpellKey9:
-	switchSpell(9)
-	return
-
-switchSpellKey10:
-	switchSpell(10)
-	return
-
-
 ; 按键切换消耗品
 switchItem(targetIndex) {
 	if (checkEldenRingWindow() = 0) {
@@ -386,47 +344,6 @@ switchItem(targetIndex) {
 	Sleep % click_interval
 	realSwitchItem(targetIndex, false)
 }
-
-switchItemKey1:
-	switchItem(1)
-	return
-
-switchItemKey2:
-	switchItem(2)
-	return
-
-switchItemKey3:
-	switchItem(3)
-	return
-
-switchItemKey4:
-	switchItem(4)
-	return
-
-switchItemKey5:
-	switchItem(5)
-	return
-
-switchItemKey6:
-	switchItem(6)
-	return
-
-switchItemKey7:
-	switchItem(7)
-	return
-
-switchItemKey8:
-	switchItem(8)
-	return
-
-switchItemKey9:
-	switchItem(9)
-	return
-
-switchItemKey10:
-	switchItem(10)
-	return
-
 
 ; 按键切换装备
 switchEquippment(index) {
@@ -450,42 +367,7 @@ switchEquippment(index) {
     singlePress(menu_button, 1)
 }
 
-switchEquippmentKey1:
-    switchEquippment(1)
-    return
-
-switchEquippmentKey2:
-    switchEquippment(2)
-    return
-
-switchEquippmentKey3:
-    switchEquippment(3)
-    return
-
-switchEquippmentKey4:
-    switchEquippment(4)
-    return
-
-switchEquippmentKey5:
-    switchEquippment(5)
-    return
-
-switchEquippmentKey6:
-    switchEquippment(6)
-    return
-
-switchEquippmentKey7:
-    switchEquippment(7)
-    return
-
-switchEquippmentKey8:
-    switchEquippment(8)
-    return
-
-switchEquippmentKey9:
-    switchEquippment(9)
-    return
-
+; 按键映射
 sendMappedKey(index) {
 	if (checkEldenRingWindow() = 0) {
 		return
@@ -495,47 +377,6 @@ sendMappedKey(index) {
         singlePress(kmGameKey, 1)
     }
 }
-
-keyMap1:
-    sendMappedKey(1)
-    return
-
-keyMap2:
-    sendMappedKey(2)
-    return
-
-keyMap3:
-    sendMappedKey(3)
-    return
-
-keyMap4:
-    sendMappedKey(4)
-    return
-
-keyMap5:
-    sendMappedKey(5)
-    return
-
-keyMap6:
-    sendMappedKey(6)
-    return
-
-keyMap7:
-    sendMappedKey(7)
-    return
-
-keyMap8:
-    sendMappedKey(8)
-    return
-
-keyMap9:
-    sendMappedKey(9)
-    return
-
-keyMap10:
-    sendMappedKey(10)
-    return
-
 
 ; 翻滚与奔跑分离
 newDodgeingKey:
