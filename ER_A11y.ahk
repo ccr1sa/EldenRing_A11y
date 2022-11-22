@@ -160,9 +160,9 @@ recogText(l, t, r, b) {
 
 ; 长按一个按键
 longPress(button) {
-    Send {%button% down}
+    Send {Blind}{%button% down}
     Sleep 650
-    Send {%button% up}
+    Send {Blind}{%button% up}
 }
 
 ; 单击或连击一个按键
@@ -171,15 +171,15 @@ singlePress(button, count:=1, interval:=-1) {
         interval := click_interval
     }
     if (count = 1) {
-		Send {%button% down}
+		Send {Blind}{%button% down}
 		Sleep 10
-    	Send {%button% up}
+    	Send {Blind}{%button% up}
 		Sleep % interval
     } else {
         Loop %count% {
-            Send {%button% down}
+            Send {Blind}{%button% down}
             Sleep 10
-            Send {%button% up}
+            Send {Blind}{%button% up}
             Sleep % interval
         }
 	}
@@ -409,10 +409,15 @@ newDodgeingKey:
 	if (checkEldenRingWindow() = 0) {
 		return
 	}
-	Loop 2 {
-		Send {%dodging_key_in_game% up}
-		Send {%dodging_key_in_game% down}
+	Loop 3 {
+		Send {Blind}{%dodging_key_in_game% up}
+		Send {Blind}{%dodging_key_in_game% down}
 	}
-	Send {%dodging_key_in_game% up}
+
+    DashStateFeature = ~%dodging_key_in_game% &
+	IfNotInString, A_ThisHotkey, %DashStateFeature%
+	{
+	    Send {Blind}{%dodging_key_in_game% up}
+	}
 	Sleep 150
 	return
