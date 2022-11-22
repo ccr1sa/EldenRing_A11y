@@ -380,15 +380,15 @@ switchEquippment(index) {
     typeArr := StrSplit(type, "_")
 	pos := eqp_positions[index]
     posArr := StrSplit(pos, "_")
-    long_interval := click_interval * 2
+    long_interval := click_interval * 1.5
 
     singlePress(menu_button, 1)
     Sleep, % long_interval
     singlePress(confirm_button, 1)
-    Sleep, % long_interval
+    Sleep, % click_interval
 
     LeftClick(equipment_dimen[1] + (equipment_dimen[3] * typeArr[1]), equipment_dimen[2] + (equipment_dimen[4] * typeArr[2]), long_interval)
-    LeftClick(arsenal_dimen[1] + (arsenal_dimen[3] * posArr[1]), arsenal_dimen[2] + (arsenal_dimen[4] * posArr[2]), long_interval)
+    LeftClick(arsenal_dimen[1] + (arsenal_dimen[3] * posArr[1]), arsenal_dimen[2] + (arsenal_dimen[4] * posArr[2]), click_interval)
 
     singlePress(menu_button, 1)
 }
