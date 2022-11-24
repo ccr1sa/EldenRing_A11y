@@ -32,25 +32,6 @@ addTitle(title, yOffset) {
     Gui, font
 }
 
-findTextRegion(type) {
-    SysGet, ScreenDimen, Monitor
-    width := ScreenDimenRight - ScreenDimenLeft
-    height := ScreenDimenBottom - ScreenDimenTop
-    if (type = 0) { ; 查找法术名称显示区域的预设值
-        key = Spell_%width%_%height%
-        iniRead, spellNameRegion, ER_A11y.ini, Resolution, %key%, 0;0;0;0
-        return spellNameRegion
-    } else if (type = 1) { ; 查找消耗品名称显示区域的预设值
-        key = Item_%width%_%height%
-        iniRead, itemNameRegion, ER_A11y.ini, Resolution, %key%, 0;0;0;0
-        return itemNameRegion
-    } else if (type = 2) { ; 查找装备显示区域的预设值
-        key = Eqp_%width%_%height%
-        iniRead, equipmentRegion, ER_A11y.ini, Resolution, %key%, 0;0;0;0
-        return equipmentRegion
-    }
-}
-
 ; 初始化可选按键的配置
 global combine_keys_map := ComObjCreate("Scripting.Dictionary")
 combine_keys_map.Add("空格", "Space")
@@ -437,6 +418,25 @@ initKeyMap() {
 
         GuiControl, Choose, KmGameKey%A_Index%, % getValueIndexFromDict(all_keys_map, kmGameKey, 1)
         GuiControl, Choose, KmNewKey%A_Index%, % getValueIndexFromDict(all_keys_map, kmNewKey, 1)
+    }
+}
+
+findTextRegion(type) {
+    SysGet, ScreenDimen, Monitor
+    width := ScreenDimenRight - ScreenDimenLeft
+    height := ScreenDimenBottom - ScreenDimenTop
+    if (type = 0) { ; 查找法术名称显示区域的预设值
+        key = Spell_%width%_%height%
+        iniRead, spellNameRegion, %mCurrentIniFile%, Resolution, %key%, 0;0;0;0
+        return spellNameRegion
+    } else if (type = 1) { ; 查找消耗品名称显示区域的预设值
+        key = Item_%width%_%height%
+        iniRead, itemNameRegion, %mCurrentIniFile%, Resolution, %key%, 0;0;0;0
+        return itemNameRegion
+    } else if (type = 2) { ; 查找装备显示区域的预设值
+        key = Eqp_%width%_%height%
+        iniRead, equipmentRegion, %mCurrentIniFile%, Resolution, %key%, 0;0;0;0
+        return equipmentRegion
     }
 }
 
