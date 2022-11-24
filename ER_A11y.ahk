@@ -1,13 +1,17 @@
 ﻿#SingleInstance Force
 #NoTrayIcon
 
+iniRead, EREnabled, ER_A11y.ini, Common, enabled
+iniRead, DS3Enabled, ER_A11y_DS3.ini, Common, enabled
+global mCurrentIniFile := EREnabled = 1? "ER_A11y.ini": "ER_A11y_DS3.ini"
+
 global gNumKeyMaps := 10
 
 ; 读取翻滚配置
-iniRead, keyInGame, ER_A11y.ini, Dodging, key_in_game
+iniRead, keyInGame, %mCurrentIniFile%, Dodging, key_in_game
 global dodging_key_in_game := keyInGame
 if (dodging_key_in_game) { ; 只有设置了游戏中的切换键，才能启用该功能
-	iniRead, keyDetached, ER_A11y.ini, Dodging, key_detached
+	iniRead, keyDetached, %mCurrentIniFile%, Dodging, key_detached
 	if (keyDetached) {
 		hotkey, ~%keyDetached%, newDodgeingKey
 		hotkey, ~%dodging_key_in_game% & ~%keyDetached%, newDodgeingKey
@@ -43,14 +47,14 @@ hotkeyWithDash(hotkey, callback) {
 }
 
 ; 读取法术配置
-iniRead, equippedSpells, ER_A11y.ini, Spells, equipped_spells
+iniRead, equippedSpells, %mCurrentIniFile%, Spells, equipped_spells
 global equipped_spells := StrSplit(equippedSpells, ";") ; 已装备的法术列表
-iniRead, switchSpellButton, ER_A11y.ini, Spells, switch_spell_button
+iniRead, switchSpellButton, %mCurrentIniFile%, Spells, switch_spell_button
 global switch_spell_button := switchSpellButton ; 切换法术的键盘按键。不能是大写字母，这会导致 AHK 按下 Shift 键
 if (switch_spell_button) { ; 只有设置了游戏中的切换键，才能启用该功能
-	iniRead, spellNameRegion, ER_A11y.ini, Spells, spell_name_region
+	iniRead, spellNameRegion, %mCurrentIniFile%, Spells, spell_name_region
 	global spell_name_region := StrSplit(spellNameRegion, ";") ; 游戏中法术名称的像素区域
-	iniRead, keyDetached1, ER_A11y.ini, Spells, key_detached
+	iniRead, keyDetached1, %mCurrentIniFile%, Spells, key_detached
 	global switchSpellKeys := StrSplit(keyDetached1, ";")
 	for i, key in switchSpellKeys {
 		if (key) {
@@ -62,14 +66,14 @@ if (switch_spell_button) { ; 只有设置了游戏中的切换键，才能启用
 }
 
 ; 读取消耗品配置
-iniRead, equippedItems, ER_A11y.ini, Items, equipped_items
+iniRead, equippedItems, %mCurrentIniFile%, Items, equipped_items
 global equipped_items := StrSplit(equippedItems, ";") ; 已装备的消耗品列表
-iniRead, switchItemButton, ER_A11y.ini, Items, switch_item_button
+iniRead, switchItemButton, %mCurrentIniFile%, Items, switch_item_button
 global switch_item_button := switchItemButton ; 切换消耗品的键盘按键。不能是大写字母，这会导致 AHK 按下 Shift 键
 if (switch_item_button) { ; 只有设置了游戏中的切换键，才能启用该功能
-	iniRead, itemNameRegion, ER_A11y.ini, Items, item_name_region
+	iniRead, itemNameRegion, %mCurrentIniFile%, Items, item_name_region
 	global item_name_region := StrSplit(itemNameRegion, ";") ; 游戏中消耗品名称的像素区域
-	iniRead, keyDetached2, ER_A11y.ini, Items, key_detached
+	iniRead, keyDetached2, %mCurrentIniFile%, Items, key_detached
 	global switchItemKeys := StrSplit(keyDetached2, ";")
 	for i, key in switchItemKeys {
 		if (key) {
@@ -81,15 +85,15 @@ if (switch_item_button) { ; 只有设置了游戏中的切换键，才能启用�
 }
 
 ; 读取通用配置
-iniRead, clickInterval, ER_A11y.ini, Common, click_interval
+iniRead, clickInterval, %mCurrentIniFile%, Common, click_interval
 global click_interval := clickInterval ; 切换法术或消耗品时，两次按键的间隔时间
-iniRead, menuKeyInGame, ER_A11y.ini, Common, menu_button
+iniRead, menuKeyInGame, %mCurrentIniFile%, Common, menu_button
 global menu_button := menuKeyInGame
-iniRead, confirmKeyInGame, ER_A11y.ini, Common, confirm_button
+iniRead, confirmKeyInGame, %mCurrentIniFile%, Common, confirm_button
 global confirm_button := confirmKeyInGame
 
 ; 读取装备配置
-iniRead, equipmentRegion, ER_A11y.ini, Equipment, equipment_region
+iniRead, equipmentRegion, %mCurrentIniFile%, Equipment, equipment_region
 global equipment_dimen := StrSplit(equipmentRegion, ";") ; 游戏中显示装备的像素区域
 global arsenal_dimen := []
 arsenal_dimen.Push(equipment_dimen[1])
@@ -115,7 +119,7 @@ global eqp_types := []
 global eqp_positions := []
 if (menu_button) and (confirm_button) { ; 只有设置了游戏中的返回键和确认，才能启用该功能
     Loop 9 {
-        iniRead, config, ER_A11y.ini, Equipment, config%A_Index%
+        iniRead, config, %mCurrentIniFile%, Equipment, config%A_Index%
         configArray := StrSplit(config, ";")
         key := configArray[1]
         eqp_types.Push(configArray[2])
@@ -132,7 +136,7 @@ if (menu_button) and (confirm_button) { ; 只有设置了游戏中的返回键�
 ; 读取按键映射配置
 global gKmGameKeys := []
 Loop %gNumKeyMaps% {
-    iniRead, config, ER_A11y.ini, KeyMap, config%A_Index%
+    iniRead, config, %mCurrentIniFile%, KeyMap, config%A_Index%
     configArray := StrSplit(config, ";")
     gKmGameKeys.Push(configArray[1])
     kmNewKey := configArray[2]
@@ -344,6 +348,11 @@ realSwitchItem(targetIndex, longPressWhenUnmatched) {
 checkEldenRingWindow() {
 	WinGetActiveTitle, Title
 	window := "ELDEN RING"
+	IfInString, Title, %window%
+	{
+		return 1
+	}
+	window := "DARK SOULS"
 	IfInString, Title, %window%
 	{
 		return 1

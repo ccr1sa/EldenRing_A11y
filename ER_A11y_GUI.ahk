@@ -38,7 +38,7 @@ genListBoxParamFromDict(useK1orV0, dict) {
 getValueIndexFromDict(dict, value, resultOffset) {
 	for k in dict {
 		v := dict.Item(k)
-		if (value = v) {
+		if (k) and (value = v) {
 			return % (A_Index + resultOffset)
 		}
 	}
@@ -152,6 +152,12 @@ Gui, Add, Button, Default w80 xm+188 y+4 vBtnStart gOnBtnApplyClicked, 开始
 
 ; 常规设置
 Gui, Tab, 1
+
+addTitle("选择游戏", 10)
+checked := (mCurrentCheckedGame=1? 1: 0)
+Gui, Add, Radio, x+24 h18 0x200 vRbER gOnERChecked, 艾尔登法环
+checked := (mCurrentCheckedGame=2? 1: 0)
+Gui, Add, Radio, x+24 h18 0x200 vRbDS3 gOnDS3Checked, 黑暗之魂3
 
 ; 翻滚设置
 addTitle("分离奔跑和翻滚按键", 10)
@@ -334,6 +340,17 @@ if (!FileExist("Dll\\PaddleOCR.dll")) {
     MsgBox, % "未下载文字识别库，切换法术和消耗品将变得缓慢"
 }
 
+; 获取选择的游戏与配置文件
+iniRead, EREnabled, ER_A11y.ini, Common, enabled
+iniRead, DS3Enabled, ER_A11y_DS3.ini, Common, enabled
+global mCurrentCheckedGame := EREnabled = 1? 1: 2
+global mCurrentIniFile := EREnabled = 1? "ER_A11y.ini": "ER_A11y_DS3.ini"
+if (mCurrentCheckedGame = 1) {
+    GuiControl,, RbER, 1
+} else {
+    GuiControl,, RbDS3, 1
+}
+
 initUI()
 return
 
@@ -346,39 +363,39 @@ initUI() {
 }
 
 initCommon() {
-    iniRead, dodgingKeyInGame, ER_A11y.ini, Dodging, key_in_game
+    iniRead, dodgingKeyInGame, %mCurrentIniFile%, Dodging, key_in_game
     GuiControl, Choose, DodgingKeyInGame, % getValueIndexFromDict(all_keys_map, dodgingKeyInGame, 1)
 
-    iniRead, dodgingKeyDetached, ER_A11y.ini, Dodging, key_detached
+    iniRead, dodgingKeyDetached, %mCurrentIniFile%, Dodging, key_detached
     GuiControl, Choose, DodgingKeyDetached, % getValueIndexFromDict(all_keys_map, dodgingKeyDetached, 1)
 
-    iniRead, menuKeyInGame, ER_A11y.ini, Common, menu_button
+    iniRead, menuKeyInGame, %mCurrentIniFile%, Common, menu_button
     GuiControl, Choose, MenuKeyInGame, % getValueIndexFromDict(single_keys_map, menuKeyInGame, 1)
 
-    iniRead, confirmKeyInGame, ER_A11y.ini, Common, confirm_button
+    iniRead, confirmKeyInGame, %mCurrentIniFile%, Common, confirm_button
     GuiControl, Choose, ConfirmKeyInGame, % getValueIndexFromDict(single_keys_map, confirmKeyInGame, 1)
 
-    iniRead, clickInterval, ER_A11y.ini, Common, click_interval
+    iniRead, clickInterval, %mCurrentIniFile%, Common, click_interval
     GuiControl, Text, ClickInterval, % clickInterval
 }
 
 initSpells() {
-    iniRead, equippedSpells, ER_A11y.ini, Spells, equipped_spells
+    iniRead, equippedSpells, %mCurrentIniFile%, Spells, equipped_spells
     equippedSpellArray := StrSplit(equippedSpells, ";")
     Loop %mNumSpellHotkeys% {
         GuiControl, Text, EquippedSpell%A_Index%, % equippedSpellArray[A_Index]
     }
 
-    iniRead, switchSpellKeysDetached, ER_A11y.ini, Spells, key_detached
+    iniRead, switchSpellKeysDetached, %mCurrentIniFile%, Spells, key_detached
     switchSpellKeyArray := StrSplit(switchSpellKeysDetached, ";")
     Loop %mNumSpellHotkeys% {
         GuiControl, Choose, SwitchSpellKeyDetached%A_Index%, % getValueIndexFromDict(single_keys_map, switchSpellKeyArray[A_Index], 1)
     }
 
-    iniRead, switchSpellButton, ER_A11y.ini, Spells, switch_spell_button
+    iniRead, switchSpellButton, %mCurrentIniFile%, Spells, switch_spell_button
     GuiControl, Choose, SwitchSpellKey, % getValueIndexFromDict(all_keys_map, switchSpellButton, 1)
 
-    iniRead, spellNameRegion, ER_A11y.ini, Spells, spell_name_region
+    iniRead, spellNameRegion, %mCurrentIniFile%, Spells, spell_name_region
     if (!spellNameRegion) { ; 未设置分辨率，尝试从配置文件中寻找预设值
         spellNameRegion := findTextRegion(0)
     }
@@ -386,22 +403,22 @@ initSpells() {
 }
 
 initItems() {
-    iniRead, equippedItems, ER_A11y.ini, Items, equipped_items
+    iniRead, equippedItems, %mCurrentIniFile%, Items, equipped_items
     equippedItemArray := StrSplit(equippedItems, ";")
     Loop %mNumItemHotkeys% {
         GuiControl, Text, EquippedItem%A_Index%, % equippedItemArray[A_Index]
     }
 
-    iniRead, switchItemKeysDetached, ER_A11y.ini, Items, key_detached
+    iniRead, switchItemKeysDetached, %mCurrentIniFile%, Items, key_detached
     switchItemKeyArray := StrSplit(switchItemKeysDetached, ";")
     Loop %mNumItemHotkeys% {
         GuiControl, Choose, SwitchItemKeyDetached%A_Index%, % getValueIndexFromDict(single_keys_map, switchItemKeyArray[A_Index], 1)
     }
 
-    iniRead, switchItemButton, ER_A11y.ini, Items, switch_item_button
+    iniRead, switchItemButton, %mCurrentIniFile%, Items, switch_item_button
     GuiControl, Choose, SwitchItemKey, % getValueIndexFromDict(all_keys_map, switchItemButton, 1)
 
-    iniRead, itemNameRegion, ER_A11y.ini, Items, item_name_region
+    iniRead, itemNameRegion, %mCurrentIniFile%, Items, item_name_region
     if (!itemNameRegion) { ; 未设置分辨率，尝试从配置文件中寻找预设值
         itemNameRegion := findTextRegion(1)
     }
@@ -409,14 +426,14 @@ initItems() {
 }
 
 initEqp() {
-    iniRead, equipmentRegion, ER_A11y.ini, Equipment, equipment_region
+    iniRead, equipmentRegion, %mCurrentIniFile%, Equipment, equipment_region
     if (!equipmentRegion) { ; 未设置分辨率，尝试从配置文件中寻找预设值
         equipmentRegion := findTextRegion(2)
     }
     GuiControl, Text, EquipmentRegion, % equipmentRegion
 
     Loop %mNumEqpHotKeys% {
-        iniRead, config, ER_A11y.ini, Equipment, config%A_Index%
+        iniRead, config, %mCurrentIniFile%, Equipment, config%A_Index%
         configArray := StrSplit(config, ";")
         key := configArray[1]
         type := configArray[2]
@@ -430,7 +447,7 @@ initEqp() {
 
 initKeyMap() {
     Loop %mNumKeyMaps% {
-        iniRead, config, ER_A11y.ini, KeyMap, config%A_Index%
+        iniRead, config, %mCurrentIniFile%, KeyMap, config%A_Index%
         configArray := StrSplit(config, ";")
         kmGameKey := configArray[1]
         kmNewKey := configArray[2]
@@ -463,8 +480,8 @@ saveHotkeySettings() {
 	; 记录翻滚设置
 	GuiControlGet, DodgingKeyInGame
 	GuiControlGet, DodgingKeyDetached
-	IniWrite, % all_keys_map.Item(DodgingKeyInGame), ER_A11y.ini, Dodging, key_in_game
-	IniWrite, % all_keys_map.Item(DodgingKeyDetached), ER_A11y.ini, Dodging, key_detached
+	IniWrite, % all_keys_map.Item(DodgingKeyInGame), %mCurrentIniFile%, Dodging, key_in_game
+	IniWrite, % all_keys_map.Item(DodgingKeyDetached), %mCurrentIniFile%, Dodging, key_detached
 
 	; 记录切换间隔时间
 	GuiControlGet, ClickInterval
@@ -473,13 +490,13 @@ saveHotkeySettings() {
 	} else if (ClickInterval > 200) {
 		ClickInterval = 200
 	}
-	IniWrite, %ClickInterval%, ER_A11y.ini, Common, click_interval
+	IniWrite, %ClickInterval%, %mCurrentIniFile%, Common, click_interval
 
 	; 记录菜单键和确认键
 	GuiControlGet, MenuKeyInGame
 	GuiControlGet, ConfirmKeyInGame
-	IniWrite, % single_keys_map.Item(MenuKeyInGame), ER_A11y.ini, Common, menu_button
-	IniWrite, % single_keys_map.Item(ConfirmKeyInGame), ER_A11y.ini, Common, confirm_button
+	IniWrite, % single_keys_map.Item(MenuKeyInGame), %mCurrentIniFile%, Common, menu_button
+	IniWrite, % single_keys_map.Item(ConfirmKeyInGame), %mCurrentIniFile%, Common, confirm_button
 
 	; 记录已记忆的法术
 	EquippedSpellsString := ""
@@ -495,7 +512,7 @@ saveHotkeySettings() {
 		}
 		EquippedSpellsString .= value
 	}
-	IniWrite, %EquippedSpellsString%, ER_A11y.ini, Spells, equipped_spells
+	IniWrite, %EquippedSpellsString%, %mCurrentIniFile%, Spells, equipped_spells
 
 	; 记录切换法术按键
 	SwitchSpellKeysString := ""
@@ -507,13 +524,13 @@ saveHotkeySettings() {
 		}
 		SwitchSpellKeysString .= all_keys_map.Item(value)
 	}
-	IniWrite, %SwitchSpellKeysString%, ER_A11y.ini, Spells, key_detached
+	IniWrite, %SwitchSpellKeysString%, %mCurrentIniFile%, Spells, key_detached
 
 	; 记录法术设置
 	GuiControlGet, SwitchSpellKey
 	GuiControlGet, SpellNameRegion
-	IniWrite, % all_keys_map.Item(SwitchSpellKey), ER_A11y.ini, Spells, switch_spell_button
-	IniWrite, %SpellNameRegion%, ER_A11y.ini, Spells, spell_name_region
+	IniWrite, % all_keys_map.Item(SwitchSpellKey), %mCurrentIniFile%, Spells, switch_spell_button
+	IniWrite, %SpellNameRegion%, %mCurrentIniFile%, Spells, spell_name_region
 
 	; 记录已装备的消耗品
 	EquippedItemsString := ""
@@ -529,7 +546,7 @@ saveHotkeySettings() {
 		}
 		EquippedItemsString .= value
 	}
-	IniWrite, %EquippedItemsString%, ER_A11y.ini, Items, equipped_items
+	IniWrite, %EquippedItemsString%, %mCurrentIniFile%, Items, equipped_items
 
 	; 记录切换消耗品按键
 	SwitchItemKeysString := ""
@@ -541,17 +558,17 @@ saveHotkeySettings() {
 		}
 		SwitchItemKeysString .= all_keys_map.Item(value)
 	}
-	IniWrite, %SwitchItemKeysString%, ER_A11y.ini, Items, key_detached
+	IniWrite, %SwitchItemKeysString%, %mCurrentIniFile%, Items, key_detached
 
 	; 记录消耗品设置
 	GuiControlGet, SwitchItemKey
 	GuiControlGet, ItemNameRegion
-	IniWrite, % all_keys_map.Item(SwitchItemKey), ER_A11y.ini, Items, switch_item_button
-	IniWrite, %ItemNameRegion%, ER_A11y.ini, Items, item_name_region
+	IniWrite, % all_keys_map.Item(SwitchItemKey), %mCurrentIniFile%, Items, switch_item_button
+	IniWrite, %ItemNameRegion%, %mCurrentIniFile%, Items, item_name_region
 
 	; 记录装备设置
 	GuiControlGet, EquipmentRegion
-	IniWrite, %EquipmentRegion%, ER_A11y.ini, Equipment, equipment_region
+	IniWrite, %EquipmentRegion%, %mCurrentIniFile%, Equipment, equipment_region
 	Loop %mNumEqpHotKeys% {
 	    GuiControlGet, EqpKey%A_Index%
 		GuiControlGet, EqpType%A_Index%
@@ -560,7 +577,7 @@ saveHotkeySettings() {
 		eqpType := equipment_types.Item(EqpType%A_Index%)
 		eqpPos := equipment_positions.Item(EqpPos%A_Index%)
 		value := eqpKey . ";" . eqpType . ";" . eqpPos
-	    IniWrite, %value%, ER_A11y.ini, Equipment, config%A_Index%
+	    IniWrite, %value%, %mCurrentIniFile%, Equipment, config%A_Index%
 	}
 
 	; 记录按键映射设置
@@ -570,9 +587,31 @@ saveHotkeySettings() {
 		kmGameKey := all_keys_map.Item(KmGameKey%A_Index%)
 		kmNewKey := all_keys_map.Item(KmNewKey%A_Index%)
 		value := kmGameKey . ";" . kmNewKey
-	    IniWrite, %value%, ER_A11y.ini, KeyMap, config%A_Index%
+	    IniWrite, %value%, %mCurrentIniFile%, KeyMap, config%A_Index%
 	}
 }
+
+OnERChecked:
+    if (mCurrentCheckedGame != 1) {
+        stopERA11y()
+        saveHotkeySettings()
+
+        mCurrentCheckedGame := 1
+        mCurrentIniFile := "ER_A11y.ini"
+        initUI()
+    }
+    return
+
+OnDS3Checked:
+    if (mCurrentCheckedGame != 2) {
+        stopERA11y()
+        saveHotkeySettings()
+
+        mCurrentCheckedGame := 2
+        mCurrentIniFile := "ER_A11y_DS3.ini"
+        initUI()
+    }
+    return
 
 ClearEqp:
     arr := StrSplit(A_GuiControl, "_")
@@ -610,6 +649,13 @@ PaddleGithubClicked:
 	return
 
 OnBtnApplyClicked:
+    if (mCurrentCheckedGame = 1) {
+	    IniWrite, 1, ER_A11y.ini, Common, enabled
+	    IniWrite, 0, ER_A11y_DS3.ini, Common, enabled
+    } else {
+	    IniWrite, 0, ER_A11y.ini, Common, enabled
+	    IniWrite, 1, ER_A11y_DS3.ini, Common, enabled
+    }
     saveHotkeySettings()
     startERA11y()
 	return
