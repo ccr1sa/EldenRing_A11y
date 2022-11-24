@@ -459,42 +459,7 @@ findTextRegion(type) {
     }
 }
 
-ClearEqp:
-    arr := StrSplit(A_GuiControl, "_")
-    index := arr[2]
-    if (index) {
-        GuiControl, Choose, EqpKey%index%, 1
-        GuiControl, Choose, EqpType%index%, 1
-        GuiControl, Choose, EqpPos%index%, 1
-    }
-    return
-
-ClearKeyMap:
-    arr := StrSplit(A_GuiControl, "_")
-    index := arr[2]
-    if (index) {
-        GuiControl, Choose, KmGameKey%index%, 1
-        GuiControl, Choose, KmNewKey%index%, 1
-    }
-    return
-
-EqpMeasureTipsClicked:
-    Run res\\measure_equipment_region.jpg
-    return
-
-TextMeasureTipsClicked:
-    Run res\\measure_text_region.jpg
-    return
-
-MyGithubClicked:
-	Run https://github.com/ccr1sa/EldenRing_A11y
-	return
-
-PaddleGithubClicked:
-	Run https://github.com/telppa/PaddleOCR-AutoHotkey
-	return
-
-OnBtnApplyClicked:
+saveHotkeySettings() {
 	; 记录翻滚设置
 	GuiControlGet, DodgingKeyInGame
 	GuiControlGet, DodgingKeyDetached
@@ -607,10 +572,49 @@ OnBtnApplyClicked:
 		value := kmGameKey . ";" . kmNewKey
 	    IniWrite, %value%, ER_A11y.ini, KeyMap, config%A_Index%
 	}
+}
 
+ClearEqp:
+    arr := StrSplit(A_GuiControl, "_")
+    index := arr[2]
+    if (index) {
+        GuiControl, Choose, EqpKey%index%, 1
+        GuiControl, Choose, EqpType%index%, 1
+        GuiControl, Choose, EqpPos%index%, 1
+    }
+    return
+
+ClearKeyMap:
+    arr := StrSplit(A_GuiControl, "_")
+    index := arr[2]
+    if (index) {
+        GuiControl, Choose, KmGameKey%index%, 1
+        GuiControl, Choose, KmNewKey%index%, 1
+    }
+    return
+
+EqpMeasureTipsClicked:
+    Run res\\measure_equipment_region.jpg
+    return
+
+TextMeasureTipsClicked:
+    Run res\\measure_text_region.jpg
+    return
+
+MyGithubClicked:
+	Run https://github.com/ccr1sa/EldenRing_A11y
+	return
+
+PaddleGithubClicked:
+	Run https://github.com/telppa/PaddleOCR-AutoHotkey
+	return
+
+OnBtnApplyClicked:
+    saveHotkeySettings()
     startERA11y()
 	return
 
 GuiClose:
     stopERA11y()
+    saveHotkeySettings()
 	ExitApp
