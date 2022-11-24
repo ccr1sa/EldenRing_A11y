@@ -52,7 +52,7 @@ findTextRegion(type) {
 }
 
 ; 初始化可选按键的配置
-combine_keys_map := ComObjCreate("Scripting.Dictionary")
+global combine_keys_map := ComObjCreate("Scripting.Dictionary")
 combine_keys_map.Add("空格", "Space")
 combine_keys_map.Add("左 Control", "LCtrl")
 combine_keys_map.Add("右 Control", "RCtrl")
@@ -62,7 +62,7 @@ combine_keys_map.Add("左 Alt", "LAlt")
 combine_keys_map.Add("右 Alt", "RAlt")
 combine_keys_list_box_value := genListBoxParamFromDict(1, combine_keys_map)
 
-single_keys_map := ComObjCreate("Scripting.Dictionary")
+global single_keys_map := ComObjCreate("Scripting.Dictionary")
 single_keys_map.Add("Esc", "Esc")
 single_keys_map.Add("Tab", "Tab")
 single_keys_map.Add("上", "Up")
@@ -134,7 +134,7 @@ single_keys_map.Add("Y", "y")
 single_keys_map.Add("Z", "z")
 single_keys_list_box_value := genListBoxParamFromDict(1, single_keys_map)
 
-all_keys_map := ComObjCreate("Scripting.Dictionary")
+global all_keys_map := ComObjCreate("Scripting.Dictionary")
 for k in combine_keys_map
 	all_keys_map.Add(k, combine_keys_map.Item(k))
 for k in single_keys_map
@@ -150,39 +150,28 @@ Gui, Tab,
 Gui, Add, Button, Default w80 xm+188 y+4 gOnBtnApplyClicked, 开始
 
 
-; 翻滚设置
+; 常规设置
 Gui, Tab, 1
 
-iniRead, dodgingKeyInGame, ER_A11y.ini, Dodging, key_in_game
+; 翻滚设置
 addTitle("分离奔跑和翻滚按键", 10)
 Gui, Add, Text, xm+16 y+8 h18 0x200, 游戏的翻滚键
 Gui, Add, DropDownList, x+8 vDodgingKeyInGame, %all_keys_list_box_value%
-GuiControl, Choose, DodgingKeyInGame, % getValueIndexFromDict(all_keys_map, dodgingKeyInGame, 1)
 
-iniRead, dodgingKeyDetached, ER_A11y.ini, Dodging, key_detached
 Gui, Add, Text, x+8 h18 0x200, 新的翻滚键
 Gui, Add, DropDownList, x+8 vDodgingKeyDetached, %all_keys_list_box_value%
-GuiControl, Choose, DodgingKeyDetached, % getValueIndexFromDict(all_keys_map, dodgingKeyDetached, 1)
 Gui, Add, Text, xm+16 y+8, 　　游戏的翻滚操作是在按下并松开翻滚键后触发的，如果松开较慢，则会出`n现翻滚延迟。这里可以设置一个新的翻滚键，当按下它时，会立刻发送按下翻`n滚键和松开翻滚键2个操作，实现在按下时触发翻滚。
 
-Gui, Add, Text, xm+16 y+16 w420 0x10  ;Horizontal Line > Black
-
-
 ; 通用设置
-addTitle("通用", 0)
-iniRead, menuKeyInGame, ER_A11y.ini, Common, menu_button
+addTitle("通用", 10)
 Gui, Add, Text, xm+16 y+8 h18 0x200, 游戏的菜单键
 Gui, Add, DropDownList, x+8 vMenuKeyInGame, %single_keys_list_box_value%
-GuiControl, Choose, MenuKeyInGame, % getValueIndexFromDict(single_keys_map, menuKeyInGame, 1)
 
-iniRead, confirmKeyInGame, ER_A11y.ini, Common, confirm_button
 Gui, Add, Text, xm+16 y+8 h18 0x200, 游戏的确认键
 Gui, Add, DropDownList, x+8 vConfirmKeyInGame, %single_keys_list_box_value%
-GuiControl, Choose, ConfirmKeyInGame, % getValueIndexFromDict(single_keys_map, confirmKeyInGame, 1)
 
-iniRead, clickInterval, ER_A11y.ini, Common, click_interval
 Gui, Add, Text, xm+16 y+8 h18 0x200, 切换法术和消耗品的间隔时间
-Gui, Add, Edit, r1 vClickInterval x+8 w135 Number, %clickInterval%
+Gui, Add, Edit, r1 vClickInterval x+8 w135 Number
 Gui, Add, Text, xm+16 y+8, 　　切换法术和消耗品时，两次切换操作的间隔时间(毫秒)。数值越低，切换`n速度越快，但可能因为游戏掉帧而导致一些切换操作被忽略，出现切换错误的`n情况。至少设置为 30 以上。
 
 
@@ -190,8 +179,6 @@ Gui, Add, Text, xm+16 y+8, 　　切换法术和消耗品时，两次切换操�
 Gui, Tab, 2
 
 Gui, Add, Text, xm+10 y+8 h18 0x200, 为每一个法术设置单独的选择按键
-iniRead, equippedSpells, ER_A11y.ini, Spells, equipped_spells
-equippedSpellArray := StrSplit(equippedSpells, ";")
 Loop %mNumSpellHotkeys% {
     pos = x+8
     if (A_Index = 1) {
@@ -199,12 +186,10 @@ Loop %mNumSpellHotkeys% {
     } else if (A_Index = 6) {
         pos = xm+10 y+4
     }
-    Gui, Add, Edit, r1 vEquippedSpell%A_Index% w80 %pos%, % equippedSpellArray[A_Index]
+    Gui, Add, Edit, r1 vEquippedSpell%A_Index% w80 %pos%
 }
 
 Gui, Add, Text, xm+10 y+10 h18 0x200, ↑填写你记忆的法术　　　　　　　　　　　　　　　　　设置各个法术的按键↓
-iniRead, switchSpellKeysDetached, ER_A11y.ini, Spells, key_detached
-switchSpellKeyArray := StrSplit(switchSpellKeysDetached, ";")
 Loop %mNumSpellHotkeys% {
     pos = x+8
     if (A_Index = 1) {
@@ -213,20 +198,13 @@ Loop %mNumSpellHotkeys% {
         pos = xm+10 y+4
     }
     Gui, Add, DropDownList, vSwitchSpellKeyDetached%A_Index% w80 %pos%, % single_keys_list_box_value
-    GuiControl, Choose, SwitchSpellKeyDetached%A_Index%, % getValueIndexFromDict(single_keys_map, switchSpellKeyArray[A_Index], 1)
 }
 
-iniRead, switchSpellButton, ER_A11y.ini, Spells, switch_spell_button
 Gui, Add, Text, xm+10 y+8 h18 0x200, 游戏的切换法术键　
 Gui, Add, DropDownList, x+8 vSwitchSpellKey, %all_keys_list_box_value%
-GuiControl, Choose, SwitchSpellKey, % getValueIndexFromDict(all_keys_map, switchSpellButton, 1)
 
-iniRead, spellNameRegion, ER_A11y.ini, Spells, spell_name_region
-if (!spellNameRegion) { ; 未设置分辨率，尝试从配置文件中寻找预设值
-    spellNameRegion := findTextRegion(0)
-}
 Gui, Add, Text, xm+10 y+8 h18 0x200, 名称显示区域　　　
-Gui, Add, Edit, r1 vSpellNameRegion x+8 w135, %spellNameRegion%
+Gui, Add, Edit, r1 vSpellNameRegion x+8 w135
 Gui, Add, Text, cRed, 如果设置不正确，程序将总是通过长按切换键来切换。
 Gui, Add, Text, y+0, 如果你遇到上述问题，请使用PS、截图等工具测量该值。
 Gui, Add, Text, y+0, 要了解测量方法，请查看
@@ -237,8 +215,6 @@ Gui, Add, Text, x+0 cBlue gTextMeasureTipsClicked, 显示区域测量
 Gui, Tab, 3
 
 Gui, Add, Text, xm+10 y+8 h18 0x200, 为每一个消耗品设置单独的选择按键
-iniRead, equippedItems, ER_A11y.ini, Items, equipped_items
-equippedItemArray := StrSplit(equippedItems, ";")
 Loop %mNumItemHotkeys% {
     pos = x+8
     if (A_Index = 1) {
@@ -246,12 +222,10 @@ Loop %mNumItemHotkeys% {
     } else if (A_Index = 6) {
         pos = xm+10 y+4
     }
-    Gui, Add, Edit, r1 vEquippedItem%A_Index% w80 %pos%, % equippedItemArray[A_Index]
+    Gui, Add, Edit, r1 vEquippedItem%A_Index% w80 %pos%
 }
 
 Gui, Add, Text, xm+10 y+10 h18 0x200, ↑填写你携带的消耗品　　　　　　　　　　　　　　　设置各个消耗品的按键↓
-iniRead, switchItemKeysDetached, ER_A11y.ini, Items, key_detached
-switchItemKeyArray := StrSplit(switchItemKeysDetached, ";")
 Loop %mNumItemHotkeys% {
     pos = x+8
     if (A_Index = 1) {
@@ -260,20 +234,13 @@ Loop %mNumItemHotkeys% {
         pos = xm+10 y+4
     }
     Gui, Add, DropDownList, vSwitchItemKeyDetached%A_Index% w80 %pos%, % single_keys_list_box_value
-    GuiControl, Choose, SwitchItemKeyDetached%A_Index%, % getValueIndexFromDict(single_keys_map, switchItemKeyArray[A_Index], 1)
 }
 
-iniRead, switchItemButton, ER_A11y.ini, Items, switch_item_button
 Gui, Add, Text, xm+10 y+8 h18 0x200, 游戏的切换消耗品键
 Gui, Add, DropDownList, x+8 vSwitchItemKey, %all_keys_list_box_value%
-GuiControl, Choose, SwitchItemKey, % getValueIndexFromDict(all_keys_map, switchItemButton, 1)
 
-iniRead, itemNameRegion, ER_A11y.ini, Items, item_name_region
-if (!itemNameRegion) { ; 未设置分辨率，尝试从配置文件中寻找预设值
-    itemNameRegion := findTextRegion(1)
-}
 Gui, Add, Text, xm+10 y+8 h18 0x200, 名称显示区域　　　
-Gui, Add, Edit, r1 vItemNameRegion x+8 w135, %itemNameRegion%
+Gui, Add, Edit, r1 vItemNameRegion x+8 w135
 Gui, Add, Text, cRed, 如果设置不正确，程序将总是通过长按切换键来切换。
 Gui, Add, Text, y+0, 如果你遇到上述问题，请使用PS、截图等工具测量该值。
 Gui, Add, Text, y+0, 要了解测量方法，请查看
@@ -283,7 +250,7 @@ Gui, Add, Text, x+0 cBlue gTextMeasureTipsClicked, 显示区域测量
 ; 武器设置
 Gui, Tab, 4
 
-equipment_types := ComObjCreate("Scripting.Dictionary")
+global equipment_types := ComObjCreate("Scripting.Dictionary")
 equipment_types.Add("右手武器1", "0_0")
 equipment_types.Add("右手武器2", "1_0")
 equipment_types.Add("右手武器3", "2_0")
@@ -304,7 +271,7 @@ equipment_types.Add("弩箭1", "3_1")
 equipment_types.Add("弩箭2", "4_1")
 equipment_types_list_box_value := genListBoxParamFromDict(1, equipment_types)
 
-equipment_positions := ComObjCreate("Scripting.Dictionary")
+global equipment_positions := ComObjCreate("Scripting.Dictionary")
 Loop 6 {
     row := A_Index
     Loop 5 {
@@ -318,33 +285,20 @@ equipment_positions_list_box_value := genListBoxParamFromDict(1, equipment_posit
 
 Gui, Add, Text, xm+10 y+8 h18 0x200, 快速切换武器、防具或护符
 
-iniRead, equipmentRegion, ER_A11y.ini, Equipment, equipment_region
-if (!equipmentRegion) { ; 未设置分辨率，尝试从配置文件中寻找预设值
-    equipmentRegion := findTextRegion(2)
-}
 Gui, Add, Text, xm+10 y+8 h18 0x200, 装备显示区域
-Gui, Add, Edit, r1 vEquipmentRegion x+8 w135, %equipmentRegion%
+Gui, Add, Edit, r1 vEquipmentRegion x+8 w135
 Gui, Add, Text, x+8 h18 0x200, 如果切换失败，请查看
 Gui, Add, Text, x+0 h18 0x200 cBlue gEqpMeasureTipsClicked, 显示区域测量
 
 Loop %mNumEqpHotKeys% {
-    iniRead, config, ER_A11y.ini, Equipment, config%A_Index%
-    configArray := StrSplit(config, ";")
-    key := configArray[1]
-    type := configArray[2]
-    pos := configArray[3]
-
     Gui, Add, Text, xm+10 y+8 h18 0x200, 快捷键
     Gui, Add, DropDownList, x+8 w80 vEqpKey%A_Index%, %single_keys_list_box_value%
-    GuiControl, Choose, EqpKey%A_Index%, % getValueIndexFromDict(single_keys_map, key, 1)
 
     Gui, Add, Text, x+8 h18 0x200, 装备类型
     Gui, Add, DropDownList, x+8 w80 vEqpType%A_Index%, %equipment_types_list_box_value%
-    GuiControl, Choose, EqpType%A_Index%, % getValueIndexFromDict(equipment_types, type, 1)
 
     Gui, Add, Text, x+8 h18 0x200, 装备位置
     Gui, Add, DropDownList, x+8 w80 vEqpPos%A_Index%, %equipment_positions_list_box_value%
-    GuiControl, Choose, EqpPos%A_Index%, % getValueIndexFromDict(equipment_positions, pos, 1)
 
     Gui, Add, Button, x+8 w18 h17 vClearEqp_%A_Index% gClearEqp, ✕
 }
@@ -354,18 +308,11 @@ Gui, Tab, 5
 
 Gui, Add, Text, xm+10 y+8 h18 0x200, 对原本的按键不做任何改动，并新增一个按键来实现相同功能
 Loop %mNumKeyMaps% {
-    iniRead, config, ER_A11y.ini, KeyMap, config%A_Index%
-    configArray := StrSplit(config, ";")
-    kmGameKey := configArray[1]
-    kmNewKey := configArray[2]
-
     Gui, Add, Text, xm+10 y+8 h18 0x200, 游戏的按键
     Gui, Add, DropDownList, x+8 w128 vKmGameKey%A_Index%, %all_keys_list_box_value%
-    GuiControl, Choose, KmGameKey%A_Index%, % getValueIndexFromDict(all_keys_map, kmGameKey, 1)
 
     Gui, Add, Text, x+32 h18 0x200, 新的按键
     Gui, Add, DropDownList, x+8 w128 vKmNewKey%A_Index%, %all_keys_list_box_value%
-    GuiControl, Choose, KmNewKey%A_Index%, % getValueIndexFromDict(all_keys_map, kmNewKey, 1)
 
     Gui, Add, Button, x+8 w18 h17 vClearKeyMap_%A_Index% gClearKeyMap, ✕
 }
@@ -386,8 +333,112 @@ Gui Show, w480 h360, EldenRing Accessibility
 if (!FileExist("Dll\\PaddleOCR.dll")) {
     MsgBox, % "未下载文字识别库，切换法术和消耗品将变得缓慢"
 }
+
+initUI()
 return
 
+initUI() {
+    initCommon()
+    initSpells()
+    initItems()
+    initEqp()
+    initKeyMap()
+}
+
+initCommon() {
+    iniRead, dodgingKeyInGame, ER_A11y.ini, Dodging, key_in_game
+    GuiControl, Choose, DodgingKeyInGame, % getValueIndexFromDict(all_keys_map, dodgingKeyInGame, 1)
+
+    iniRead, dodgingKeyDetached, ER_A11y.ini, Dodging, key_detached
+    GuiControl, Choose, DodgingKeyDetached, % getValueIndexFromDict(all_keys_map, dodgingKeyDetached, 1)
+
+    iniRead, menuKeyInGame, ER_A11y.ini, Common, menu_button
+    GuiControl, Choose, MenuKeyInGame, % getValueIndexFromDict(single_keys_map, menuKeyInGame, 1)
+
+    iniRead, confirmKeyInGame, ER_A11y.ini, Common, confirm_button
+    GuiControl, Choose, ConfirmKeyInGame, % getValueIndexFromDict(single_keys_map, confirmKeyInGame, 1)
+
+    iniRead, clickInterval, ER_A11y.ini, Common, click_interval
+    GuiControl, Text, ClickInterval, % clickInterval
+}
+
+initSpells() {
+    iniRead, equippedSpells, ER_A11y.ini, Spells, equipped_spells
+    equippedSpellArray := StrSplit(equippedSpells, ";")
+    Loop %mNumSpellHotkeys% {
+        GuiControl, Text, EquippedSpell%A_Index%, % equippedSpellArray[A_Index]
+    }
+
+    iniRead, switchSpellKeysDetached, ER_A11y.ini, Spells, key_detached
+    switchSpellKeyArray := StrSplit(switchSpellKeysDetached, ";")
+    Loop %mNumSpellHotkeys% {
+        GuiControl, Choose, SwitchSpellKeyDetached%A_Index%, % getValueIndexFromDict(single_keys_map, switchSpellKeyArray[A_Index], 1)
+    }
+
+    iniRead, switchSpellButton, ER_A11y.ini, Spells, switch_spell_button
+    GuiControl, Choose, SwitchSpellKey, % getValueIndexFromDict(all_keys_map, switchSpellButton, 1)
+
+    iniRead, spellNameRegion, ER_A11y.ini, Spells, spell_name_region
+    if (!spellNameRegion) { ; 未设置分辨率，尝试从配置文件中寻找预设值
+        spellNameRegion := findTextRegion(0)
+    }
+    GuiControl, Text, SpellNameRegion, % spellNameRegion
+}
+
+initItems() {
+    iniRead, equippedItems, ER_A11y.ini, Items, equipped_items
+    equippedItemArray := StrSplit(equippedItems, ";")
+    Loop %mNumItemHotkeys% {
+        GuiControl, Text, EquippedItem%A_Index%, % equippedItemArray[A_Index]
+    }
+
+    iniRead, switchItemKeysDetached, ER_A11y.ini, Items, key_detached
+    switchItemKeyArray := StrSplit(switchItemKeysDetached, ";")
+    Loop %mNumItemHotkeys% {
+        GuiControl, Choose, SwitchItemKeyDetached%A_Index%, % getValueIndexFromDict(single_keys_map, switchItemKeyArray[A_Index], 1)
+    }
+
+    iniRead, switchItemButton, ER_A11y.ini, Items, switch_item_button
+    GuiControl, Choose, SwitchItemKey, % getValueIndexFromDict(all_keys_map, switchItemButton, 1)
+
+    iniRead, itemNameRegion, ER_A11y.ini, Items, item_name_region
+    if (!itemNameRegion) { ; 未设置分辨率，尝试从配置文件中寻找预设值
+        itemNameRegion := findTextRegion(1)
+    }
+    GuiControl, Text, ItemNameRegion, % itemNameRegion
+}
+
+initEqp() {
+    iniRead, equipmentRegion, ER_A11y.ini, Equipment, equipment_region
+    if (!equipmentRegion) { ; 未设置分辨率，尝试从配置文件中寻找预设值
+        equipmentRegion := findTextRegion(2)
+    }
+    GuiControl, Text, EquipmentRegion, % equipmentRegion
+
+    Loop %mNumEqpHotKeys% {
+        iniRead, config, ER_A11y.ini, Equipment, config%A_Index%
+        configArray := StrSplit(config, ";")
+        key := configArray[1]
+        type := configArray[2]
+        pos := configArray[3]
+
+        GuiControl, Choose, EqpKey%A_Index%, % getValueIndexFromDict(single_keys_map, key, 1)
+        GuiControl, Choose, EqpType%A_Index%, % getValueIndexFromDict(equipment_types, type, 1)
+        GuiControl, Choose, EqpPos%A_Index%, % getValueIndexFromDict(equipment_positions, pos, 1)
+    }
+}
+
+initKeyMap() {
+    Loop %mNumKeyMaps% {
+        iniRead, config, ER_A11y.ini, KeyMap, config%A_Index%
+        configArray := StrSplit(config, ";")
+        kmGameKey := configArray[1]
+        kmNewKey := configArray[2]
+
+        GuiControl, Choose, KmGameKey%A_Index%, % getValueIndexFromDict(all_keys_map, kmGameKey, 1)
+        GuiControl, Choose, KmNewKey%A_Index%, % getValueIndexFromDict(all_keys_map, kmNewKey, 1)
+    }
+}
 
 ClearEqp:
     arr := StrSplit(A_GuiControl, "_")
