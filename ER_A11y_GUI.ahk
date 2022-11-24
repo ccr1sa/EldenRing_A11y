@@ -6,6 +6,25 @@ global mNumItemHotkeys := 10
 global mNumEqpHotKeys := 9
 global mNumKeyMaps := 10
 
+global subScriptPID := -1
+
+startERA11y() {
+    if (subScriptPID != -1) {
+	    Process, close, %subScriptPID%
+	}
+	Run ER_A11y.ahk,,, PID
+	subScriptPID := PID
+    GuiControl,, BtnStart, 更新
+}
+
+stopERA11y() {
+    if (subScriptPID != -1) {
+	    Process, close, %subScriptPID%
+	}
+	subScriptPID := -1
+    GuiControl,, BtnStart, 开始
+}
+
 genListBoxParamFromDict(useK1orV0, dict) {
 	tmp := "|"
 	for k in dict {
@@ -128,7 +147,7 @@ all_keys_list_box_value := temp . single_keys_list_box_value
 Gui, Add, Tab3, w456 h320, 常规|法术|消耗品|装备|按键映射|说明
 
 Gui, Tab, 
-Gui, Add, Button, Default w80 xm+188 y+4 gOnBtnApplyClicked, 开始
+Gui, Add, Button, Default w80 xm+188 y+4 vBtnStart gOnBtnApplyClicked, 开始
 
 
 ; 常规设置
@@ -589,9 +608,9 @@ OnBtnApplyClicked:
 	    IniWrite, %value%, ER_A11y.ini, KeyMap, config%A_Index%
 	}
 
-	Run ER_A11y.ahk,,, PID
+    startERA11y()
 	return
 
 GuiClose:
-	Process, close, %PID%
+    stopERA11y()
 	ExitApp
