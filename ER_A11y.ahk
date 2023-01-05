@@ -1,6 +1,10 @@
 ﻿#SingleInstance Force
 #NoTrayIcon
 
+SysGet, ScreenDimen, Monitor
+gWidth := ScreenDimenRight - ScreenDimenLeft
+gHeight := ScreenDimenBottom - ScreenDimenTop
+
 iniRead, EREnabled, ER_A11y.ini, Common, enabled
 iniRead, DS3Enabled, ER_A11y_DS3.ini, Common, enabled
 global mCurrentIniFile := EREnabled = 1? "ER_A11y.ini": "ER_A11y_DS3.ini"
@@ -399,7 +403,19 @@ switchEquippment(index) {
     LeftClick(equipment_dimen[1] + (equipment_dimen[3] * typeArr[1]), equipment_dimen[2] + (equipment_dimen[4] * typeArr[2]), long_interval)
     LeftClick(arsenal_dimen[1] + (arsenal_dimen[3] * posArr[1]), arsenal_dimen[2] + (arsenal_dimen[4] * posArr[2]), click_interval)
 
+    if (typeArr[3] = "twohand") {
+        singlePress(confirm_button, 2) ; 奇怪，设置为 1 时无法正常切换
+        Sleep, % click_interval
+    }
+
     singlePress(menu_button, 1)
+
+    if (typeArr[3] = "twohand") {
+		Send {Blind}{%confirm_button% down}
+        Sleep, % click_interval
+        LeftClick(gWidth/2, gHeight/2, 0)
+		Send {Blind}{%confirm_button% up}
+    }
 }
 
 ; 按键映射
