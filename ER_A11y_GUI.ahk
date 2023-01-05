@@ -154,9 +154,7 @@ Gui, Add, Button, Default w80 xm+188 y+4 vBtnStart gOnBtnApplyClicked, 开始
 Gui, Tab, 1
 
 addTitle("选择游戏", 10)
-checked := (mCurrentCheckedGame=1? 1: 0)
 Gui, Add, Radio, x+24 h18 0x200 vRbER gOnERChecked, 艾尔登法环
-checked := (mCurrentCheckedGame=2? 1: 0)
 Gui, Add, Radio, x+24 h18 0x200 vRbDS3 gOnDS3Checked, 黑暗之魂3
 
 ; 翻滚设置
